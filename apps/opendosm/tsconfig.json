@@ -1,17 +1,29 @@
 {
-  "extends": "tsconfig/nextjs.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "compilerOptions": {
+    "target": "ES2015",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
     "baseUrl": ".",
     "paths": {
       "@components/*": ["components/*"],
+      "@config/*": ["config/*"],
       "@lib/*": ["lib/*"],
       "@hooks/*": ["hooks/*"],
       "@dashboards/*": ["dashboards/*"],
-      "@misc/*": ["misc/*"],
-      "@config/*": ["config/*"]
-    },
-    "ignoreDeprecations": "6.0"
+      "@icons/*": ["icons/*"]
+    }
   },
-  "exclude": ["node_modules", ".next", ".turbo"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next"]
 }
