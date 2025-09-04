@@ -1,16 +1,21 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
 # testing
 /coverage
+test-results/
+playwright-report/
+playwright/.cache/
+tests/playground/
+*-snapshots/
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
 /build
@@ -18,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+.vscode
+.idea
 
 # debug
 npm-debug.log*
@@ -33,18 +40,29 @@ yarn-error.log*
 
 # vercel
 .vercel
+.turbo
 
 # typescript
 *.tsbuildinfo
 .env.local
-public/sw.js
-public/sw.js.map
-public/workbox-*.js
-public/workbox-*.js.map
-public/fallback-*.js
-public/index.html
+sw.js
+sw.js.map
+workbox-*.js
+workbox-*.js.map
+fallback-*.js
+index.html
 
 
 # sitemaps
-public/*.xml
-public/robots.txt
+robots.txt
+sitemap-0.xml
+sitemap.xml
+
+# bundle-analyzer
+analyze
+
+# app
+dist/
+apps/app/public/translations
+apps/kkmnow/public/translations
+apps/opendosm/public/translations

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local", "**/.env"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "ANALYZE",
+        "AUTH_TOKEN",
+        "REVALIDATE_TOKEN",
+        "NEXT_PUBLIC_GA_TAG",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_APP_ENV",
+        "NEXT_PUBLIC_AUTHORIZATION_TOKEN",
+        "NEXT_PUBLIC_TILESERVER_URL",
+        "NEXT_PUBLIC_TINYBIRD_TOKEN",
+        "NEXT_PUBLIC_TINYBIRD_URL"
+      ],
+      "outputMode": "new-only",
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "e2e:test": {
+      "dependsOn": ["^build"],
+      "outputs": ["playwright-report/**", "test-results/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

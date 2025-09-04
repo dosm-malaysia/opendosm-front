@@ -1,26 +1,68 @@
-# aksara-front
+# datagovmy-front
 
-![opendosm-github.png](./public/static/images/opendosm-github.png?raw=true)
+Welcome to the official repository for Datagovmy, a comprehensive monorepo project meticulously crafted to enhance the development, management, and deployment of a suite of projects that power Malaysian government data initiatives.
 
-[OpenDOSM](https://open.dosm.gov.my), code-named _(AKSARA)_, is a web platform that catalogs, visualises, and analyses Malaysia's wealth of data provided by Department of Statistics Malaysia. Everything on this site is open-sourced and made available for the nation's benefit. If data is the new oil, then, openness is the pipeline that maximises its value.
+## About data.gov.my
 
----
+At Datagovmy, our mission is to transform data into actionable insights, and this monorepo is the central hub for displaying the our data. Our projects span a wide range of applications and packages, each playing a vital role in advancing data accessibility and utilization. Explore our projects below:
+
+#### Applications
+
+- [Datagovmy App](apps/app)
+- [OpenDOSM](apps/opendosm)
+- [KKMNow](apps/kkmnow)
+- [API Docs](apps/docs)
+
+#### Packages
+
+- [Datagovmy UI](packages/datagovmy-ui)
+- [Datagovmy Nextra](packages/datagovmy-nextra)
+- [Eslint Configs](packages/eslint-config-datagovmy)
+- [TS Config](packages/tsconfig)
+
+#### Lambda
+
+- [Rolling Auth Token](lambda/roll_auth_token)
+
+We embrace collaboration and innovation, and we invite contributions from the open-source community. Whether you want to report a bug, request a new feature, or actively contribute to our projects, your input is invaluable in our mission to make data more accessible and impactful.
+
+Join us in shaping the future of data at Datagovmy!
 
 ## Table of Contents
 
+- [Turborepo](#turborepo)
 - [Installation](#installation)
-  - [Environment Variables](#environment-variables)
 - [Commands to Know](#commands-to-know)
 - [Development Workflow](#development-workflow)
 - [Contributing](#contributing)
 - [License](#license)
 
+## Turborepo
+
+This monorepo project is efficiently managed and organized using TurboRepo, a powerful tool that streamlines the development workflow for large-scale projects. TurboRepo simplifies the management of multiple projects and packages within a single repository, ensuring smooth collaboration, dependency management, and deployment processes.
+
+#### Using TurboRepo
+
+Installation: Ensure you have TurboRepo installed locally. You can install it globally or use it as a project dependency.
+
+```bash
+npm install -g @turbo/turbo
+```
+
+Configuration: This project has been configured with turborepo to manage workspaces, project dependencies. Find the configuration at root path in [turbo.json](/turbo.json)
+
+Development Workflow: With TurboRepo in place, you can easily run commands like `turbo dev`, `turbo build`, and `turbo test` to manage your projects within the monorepo efficiently.
+
+Publishing: TurboRepo offers a streamlined publishing process, making it straightforward to release new versions of your projects.
+
+Learn more about turborepo by visiting its official docs [Turborepo](https://turbo.build/repo/docs).
+
 ## Installation
 
 We recommend to use `yarn` to manage the project's dependencies.
 
-```bash
-git clone git@github.com:dosm-malaysia/aksara-front.git
+```sh
+git clone git@github.com:data-gov-my/datagovmy-front.git
 
 # Yarn
 yarn install
@@ -33,33 +75,18 @@ npx prepare
 cp .env.example .env
 ```
 
-### Environment Variables
-
-The following are the environment variables (.env) used for OpenDOSM. Please take note, there are only 2 variables required to get the app running, both of which are related to [AKSARA BE](https://github.com/dosm-malaysia/aksara-back).
-
-| Variables                       | Required | Default                             | Description                                     |
-| ------------------------------- | -------- | ----------------------------------- | ----------------------------------------------- |
-| APP_URL                         | ⬜️      | http://localhost:3000 (development) | App domain. Optional                            |
-| NEXT_PUBLIC_APP_URL             | ⬜️      | $APP_URL                            | App domain, made public. Optional               |
-| NEXT_PUBLIC_AUTHORIZATION_TOKEN | ✅       | _Create own_                        | Authorization token for AKSARA BE communication |
-| NEXT_PUBLIC_API_URL             | ✅       | http://localhost:8000 (development) | AKSARA BE base URL                              |
-| NEXT_PUBLIC_GMAP_API_KEY        | ⬜️      | _Create own_                        | Google Maps API key. Optional                   |
-| NEXT_PUBLIC_GA_TAG              | ⬜️      | _Create own_                        | Google Analytics Tag. Optional                  |
-| NEXT_PUBLIC_MAPTILER_API_KEY    | ⬜️      | _Create own_                        | OpenStreetMap API key. Optional                 |
-| MIXPANEL_TOKEN                  | ⬜️      | _Create own_                        | Mixpanel token. Optional                        |
-| MIXPANEL_PROJECT_ID             | ⬜️      | _Create own_                        | Mixpanel project ID. Optional                   |
-| MIXPANEL_SA_USER                | ⬜️      | _Create own_                        | Mixpanel service account username. Optional     |
-| MIXPANEL_SA_USER                | ⬜️      | _Create own_                        | Mixpanel service account secret. Optional       |
-| NEXT_PUBLIC_MIXPANEL_TOKEN      | ⬜️      | $MIXPANEL_TOKEN                     | Mixpanel token, made public. Optional           |
-
 ## Commands to Know
 
 ```bash
 # Start development server
 yarn dev
+# Start development server for specific workspace
+yarn dev --filter=app
 
 # Build production app
 yarn build
+# Build production app for specific workspace
+yarn build --filter=app
 
 # Start production server
 yarn start
@@ -78,10 +105,22 @@ yarn prepare
 
 ## Contributing
 
-Thank you for your willingness to contribute to this free and open source project! When contributing, consider first discussing your desired change with the core team via GitHub issues or discussions!
+Thank you for your willingness to contribute to this free and open source project by the Malaysian public sector! When contributing, consider first discussing your desired change with the core team via GitHub issues or discussions!
+
+### Issues
+
+Issues are very valuable to this project and we appreciate the time you take with the repository.
+
+If you have anything specific and project-related to this repository, feel free to create an issue ticket.
+
+- Ideas are a valuable source of contributions others can make
+- Problems show where this project is lacking
+- With a question you show where contributors can improve the user experience
+
+Thank you for creating them.
 
 ## License
 
-OpenDOSM is licensed under [MIT](https://github.com/dosm-malaysia/aksara-front/blob/main/LICENSE.md)
+data.gov.my is licensed under [MIT](./LICENSE.md)
 
-Copyright © 2023 [Department of Statistics Malaysia](https://www.dosm.gov.my/v1_/)
+Copyright © 2023 Government of Malaysia
