@@ -1,0 +1,100 @@
+/* .table {
+  @apply relative mx-auto w-full table-auto border-separate border-spacing-0 whitespace-nowrap md:w-fit;
+}
+
+.table-responsive {
+  @apply relative overflow-x-auto;
+  max-sm:snap-x max-sm:snap-mandatory;
+} */
+
+.table > thead > th {
+  @apply border-outline dark:border-washed-dark border border-b-2;
+}
+
+.table tbody tr {
+  @apply border-outline dark:border-washed-dark border-b bg-white dark:bg-black;
+}
+
+/* .table thead tr th {
+  @apply w-auto px-2 py-2.5 text-sm font-medium text-black dark:text-white;
+  max-sm:snap-end;
+}
+
+.table tbody tr td {
+  @apply truncate bg-white px-2 py-2.5 text-sm font-normal text-black dark:bg-black dark:text-white max-sm:max-w-[150px];
+} */
+
+.table-default th:first-child > div {
+  @apply text-left;
+}
+
+.table-sticky-header tr > th {
+  @apply border-b-outline dark:border-b-washed-dark sticky top-0 border-b-2 bg-white dark:bg-black;
+}
+
+.sticky-col {
+  @apply border-outline dark:border-washed-dark sticky z-10 bg-inherit max-lg:border-r-2;
+}
+
+/* Covid Table */
+.table-sticky-first thead tr > th:first-child,
+.table-sticky-first tbody tr > td:first-child {
+  @apply sticky left-0 z-10 bg-white dark:bg-black;
+}
+
+.table th:not(:first-child) {
+  @apply w-auto;
+}
+
+.table-stripe tr {
+  @apply even:bg-background even:dark:bg-washed-dark odd:bg-white odd:dark:bg-black;
+}
+
+.table-default th:first-child {
+  @apply w-auto;
+}
+
+/****************************************** */
+
+.table-slate {
+  @apply relative w-full border-collapse border-spacing-0 rounded-xl lg:w-full lg:max-w-full;
+}
+.table-slate th {
+  @apply w-max whitespace-nowrap font-normal text-black;
+}
+.table-slate tbody tr {
+  @apply dark:border-outlineHover-dark border-b-[0.5px] border-l-0;
+}
+.table-slate tbody tr:first-child {
+  @apply dark:border-outlineHover-dark border-t-[0.5px];
+}
+.table-slate tbody tr:first-child td {
+  @apply border-t-outlineHover dark:border-outlineHover-dark border-t-[0.5px] bg-white font-bold text-black dark:bg-black dark:text-white;
+}
+.table-slate tbody tr:last-child {
+  @apply border-b-outline dark:border-b-outlineHover-dark border-b-[0.5px];
+}
+.table-slate td {
+  @apply py-4 text-black dark:text-white;
+}
+.table-slate th:not(:first-child) {
+  @apply w-min;
+}
+.table-slate tr:first-child {
+  @apply border-t-outline dark:border-washed-dark;
+}
+/* .table-default-slate th:first-child > div {
+    @apply text-left;
+}
+.table-default-slate th:first-child {
+    @apply w-min;
+}
+.table-default-slate th {
+    @apply py-2;
+} */
+.table-default-slate td {
+  @apply border-r-0;
+}
+/* .table-default-slate td:last-child {
+    @apply rounded border-r border-r-outline;
+} */
