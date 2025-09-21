@@ -61,6 +61,7 @@ const PublicationSubscriptionLayout: FC<PublicationSubscriptionLayoutProps> = ({
         <div className="hidden flex-col gap-y-2 lg:flex">
           {steps.map((step, i) => (
             <div
+              key={i}
               className={clx(
                 "flex h-full gap-4",
                 i === currentIndex
