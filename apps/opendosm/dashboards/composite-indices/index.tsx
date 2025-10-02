@@ -355,7 +355,10 @@ const CompositeIndexDashboard: FunctionComponent<CompositeIndexDashboardProps> =
                         title: t("common:common.latest", {
                           date: toDate(LATEST_TIMESTAMP, "MMM yyyy", i18n.language),
                         }),
-                        value: `${timeseries_callouts.data.leading_diffusion.callout1.toLocaleString()}%`,
+                        value: `${
+                          timeseries_callouts.data.leading_diffusion.callout1?.toLocaleString() ||
+                          "-"
+                        }%`,
                       },
                     ]}
                   />
@@ -386,7 +389,10 @@ const CompositeIndexDashboard: FunctionComponent<CompositeIndexDashboardProps> =
                         title: t("common:common.latest", {
                           date: toDate(LATEST_TIMESTAMP, "MMM yyyy", i18n.language),
                         }),
-                        value: `${timeseries_callouts.data.coincident_diffusion.callout1.toLocaleString()}%`,
+                        value: `${
+                          timeseries_callouts.data.coincident_diffusion.callout1?.toLocaleString() ||
+                          "-"
+                        }%`,
                       },
                     ]}
                   />

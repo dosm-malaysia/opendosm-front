@@ -14,7 +14,9 @@ const Banner: FunctionComponent<BannerProps> = ({ text, className }) => {
       <Container>
         <div className="flex max-w-screen-2xl gap-2 py-4">
           <InformationCircleIcon className="size-5 shrink-0" />
-          <p className={clx("text-sm [&>a]:text-white [&>a]:underline")}>{text}</p>
+          <p className={clx("text-sm [&>a]:text-white dark:[&>a]:text-white [&>a]:underline")}>
+            {text}
+          </p>{" "}
         </div>
       </Container>
     </div>
