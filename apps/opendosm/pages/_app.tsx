@@ -1,16 +1,13 @@
+import "datagovmy-ui/styles";
 import Nexti18NextConfig from "../next-i18next.config";
 import Layout from "@components/Layout";
 import { Progress, Toast } from "datagovmy-ui/components";
-import "datagovmy-ui/styles";
 import { body, header } from "datagovmy-ui/configs/font";
-import mixpanelConfig from "datagovmy-ui/configs/mixpanel";
 import { WindowProvider } from "datagovmy-ui/contexts/window";
 import { clx } from "datagovmy-ui/helpers";
-import { ga_track, track } from "datagovmy-ui/mixpanel";
 import { appWithTranslation } from "next-i18next";
 import { ThemeProvider } from "next-themes";
-import { useRouter } from "next/router";
-import { useEffect, ReactNode } from "react";
+import { ReactNode } from "react";
 import { AppPropsLayout } from "datagovmy-ui/types";
 
 // App instance
@@ -28,32 +25,6 @@ function App({ Component, pageProps }: AppPropsLayout) {
         {page}
       </Layout>
     ));
-  const router = useRouter();
-
-  useEffect(() => {
-    const is_development = process.env.NEXT_PUBLIC_APP_ENV === "development";
-    window.mixpanel.init(
-      mixpanelConfig.token,
-      {
-        debug: is_development,
-        verbose: is_development,
-        api_host: mixpanelConfig.host,
-      },
-      mixpanelConfig.name
-    );
-  }, []);
-
-  useEffect(() => {
-    // trigger page view event for client-side navigation
-    const handleRouteChange = (url: string) => {
-      ga_track(url);
-      track("page_view", pageProps?.meta);
-    };
-    router.events.on("routeChangeComplete", handleRouteChange);
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
-  }, [router.events, pageProps?.meta]);
 
   return (
     <ThemeProvider attribute="class" enableSystem={false} forcedTheme={Component.theme}>
