@@ -4,6 +4,7 @@ const pwa = require("next-pwa")({
   buildExcludes: ["./public/static/images/opendosm-github.png"],
   register: true,
   skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
 });
 
 /** @type {import('next').NextConfig} */
