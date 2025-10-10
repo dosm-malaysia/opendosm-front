@@ -112,6 +112,7 @@ export type MetaPage = Record<string, any> & {
       | "public-administration"
       | "public-finances"
       | "public-safety"
+      | "rate-statistics"
       | "services"
       | "transportation"
       | "labour-markets"
