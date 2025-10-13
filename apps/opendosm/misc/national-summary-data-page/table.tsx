@@ -7,9 +7,10 @@ import {
 import { FunctionComponent, useMemo } from "react";
 import { DownloadItem } from "./download";
 import { useTranslation } from "datagovmy-ui/hooks";
-import { At, Button } from "datagovmy-ui/components";
-import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
-import { clx, toDate } from "datagovmy-ui/helpers";
+import { At, Button, TooltipAlt, TooltipContent, TooltipTrigger } from "datagovmy-ui/components";
+import { ArrowDownTrayIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { clx, download, toDate } from "datagovmy-ui/helpers";
+import { ExcelIcon } from "datagovmy-ui/icons";
 
 declare module "@tanstack/table-core" {
   // @ts-expect-error
@@ -68,89 +69,101 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
         columns: [
           columnHelper.accessor("sdmx_xml", {
             id: "sdmx_xml",
-            // header: t("table.sdmx_xml"),
-            header: "XML",
+            header: t("table.sdmx_xml"),
             meta: {
               headerClass: "text-center",
             },
-            cell: ({ getValue }) => (
+            cell: ({ getValue, row }) => (
               <Button
                 className="text-primary border-otl-primary-200 px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
+                onClick={() => download(getValue(), row.original.title)}
               >
-                SDMX-XML
+                <span className="flex-1">SDMX-XML</span>
               </Button>
             ),
           }),
           columnHelper.accessor("sdmx_json", {
             id: "sdmx_json",
-            // header: t("table.sdmx_json"),
-            header: "JSON",
+            header: t("table.sdmx_json"),
             meta: {
               headerClass: "text-center",
               cellClass: "w-fit",
             },
-            cell: ({ getValue }) => (
+            cell: ({ getValue, row }) => (
               <Button
                 className="text-primary border-otl-primary-200 px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
+                onClick={() => download(getValue(), row.original.title)}
               >
-                SDMX-JSON
+                <span className="flex-1">SDMX-JSON</span>
               </Button>
             ),
           }),
           columnHelper.accessor("sdmx_csv", {
             id: "sdmx_csv",
-            // header: t("table.sdmx_csv"),
-            header: "CSV",
+            header: t("table.sdmx_csv"),
             meta: {
               headerClass: "text-center",
             },
-            cell: ({ getValue }) => (
+            cell: ({ getValue, row }) => (
               <Button
                 className="text-primary border-otl-primary-200 px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
+                onClick={() => download(getValue(), row.original.title)}
               >
-                SDMX-CSV
+                <span className="flex-1">SDMX-CSV</span>
               </Button>
             ),
           }),
           columnHelper.accessor("sdmx_parquet", {
             id: "sdmx_parquet",
-            // header: t("table.sdmx_parquet"),
-            header: "Parquet",
+            header: () => (
+              <div className="flex items-center gap-3 justify-center">
+                {t("table.sdmx_parquet")}
+                <TooltipAlt>
+                  <TooltipTrigger>
+                    <QuestionMarkCircleIcon className="size-4 text-txt-black-500" />
+                  </TooltipTrigger>
+                  <TooltipContent className="text-txt-white text-body-xs">
+                    {t("table.sdmx_parquet_tooltip")}
+                  </TooltipContent>
+                </TooltipAlt>
+              </div>
+            ),
             meta: {
               headerClass: "text-center",
             },
-            cell: ({ getValue }) => (
+            cell: ({ getValue, row }) => (
               <Button
                 className="text-[#FFA100] hover:border-[#FFA100]/60 border-[#FFE1AD] px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
+                onClick={() => download(getValue(), row.original.title)}
               >
-                SDMX-Parquet
+                <span className="flex-1">SDMX-Parquet</span>
               </Button>
             ),
           }),
         ],
       }),
-      columnHelper.display({
+      columnHelper.accessor("sdmx_excel", {
         id: "sdmx_excel",
-        // header: t("table.sdmx_excel"),
-        header: "Excel",
+        header: t("table.sdmx_excel"),
         meta: {
           headerClass: "text-center",
         },
-        cell: ({ getValue }) => (
+        cell: ({ getValue, row }) => (
           <Button
             className="text-primary border-otl-primary-200 px-2.5"
             variant="default"
-            icon={<ArrowDownTrayIcon className="size-4" />}
+            icon={<ExcelIcon className="size-4" />}
+            onClick={() => download(getValue(), row.original.title)}
           >
-            XLSX
+            <span className="flex-1">XLSX</span>
           </Button>
         ),
       }),
