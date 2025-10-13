@@ -5,6 +5,7 @@ declare namespace NodeJS {
     NEXT_PUBLIC_APP_ENV: "production" | "staging" | "development";
     NEXT_PUBLIC_APP_URL: string;
     NEXT_PUBLIC_API_URL: string;
+    NEXT_PUBLIC_API_S3_URL: string;
     NEXT_PUBLIC_AI_URL: string;
     NEXT_PUBLIC_I18N_URL: string;
     NEXT_PUBLIC_AUTHORIZATION_TOKEN: string;

@@ -6,6 +6,7 @@ declare namespace NodeJS {
 
     NEXT_PUBLIC_AUTHORIZATION_TOKEN: string;
     NEXT_PUBLIC_API_URL: string;
+    NEXT_PUBLIC_API_S3_URL: string;
     NEXT_PUBLIC_GMAP_API_KEY: string;
     NEXT_PUBLIC_TILESERVER_URL: string;
 

@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { parseCookies } from "./helpers";
 import { getRollingToken } from "./api-edge";
 
-type BaseURL = "api" | "app" | string;
+type BaseURL = "api" | "app" | "api_s3" | string;
 
 /**
  * Base URL builder for AKSARA.
@@ -16,18 +16,21 @@ type BaseURL = "api" | "app" | string;
 const instance = (base: BaseURL, headers: Record<string, string> = {}) => {
   const urls: Record<BaseURL, string> = {
     api: process.env.NEXT_PUBLIC_API_URL,
+    api_s3: process.env.NEXT_PUBLIC_API_S3_URL,
     app: process.env.NEXT_PUBLIC_APP_URL,
   };
   const BROWSER_RUNTIME = typeof window !== "undefined";
 
   const authorization = !BROWSER_RUNTIME
     ? process.env.NEXT_PUBLIC_AUTHORIZATION_TOKEN
-    : parseCookies(document.cookie).rolling_token;
+    : base === "api_s3"
+      ? ""
+      : parseCookies(document.cookie).rolling_token;
 
   const config: AxiosRequestConfig = {
     baseURL: urls[base] || base,
     headers: {
-      Authorization: `Bearer ${authorization}`,
+      ...(authorization && { Authorization: `Bearer ${authorization}` }),
       ...headers,
     },
   };
@@ -53,7 +56,11 @@ export const get = (
       .then((response: AxiosResponse) => resolve(response))
       .catch(async (err: AxiosError<{ status: number; message: string }>) => {
         // TODO maybe add retries with axios-retry, for all fetch methods OR refactor away from rolling token
-        if (err.response?.data.status === 401 && typeof window !== "undefined") {
+        if (
+          err.response?.data.status === 401 &&
+          typeof window !== "undefined" &&
+          base !== "api_s3"
+        ) {
           const edgeResponse = await getRollingToken();
           if (edgeResponse) {
             const { token } = await edgeResponse.json();
@@ -90,7 +97,11 @@ export const post = (
       .then((response: AxiosResponse) => resolve(response))
       .catch(async (err: AxiosError<{ status: number; message: string }>) => {
         // If gotten unauthorized status, reattempt on making the request, after fetching rolling token from edge
-        if (err.response?.data.status === 401 && typeof window !== "undefined") {
+        if (
+          err.response?.data.status === 401 &&
+          typeof window !== "undefined" &&
+          base !== "api_s3"
+        ) {
           const edgeResponse = await getRollingToken();
           if (edgeResponse) {
             const { token } = await edgeResponse.json();
@@ -127,7 +138,11 @@ export const put = (
       .then((response: AxiosResponse) => resolve(response))
       .catch(async (err: AxiosError<{ status: number; message: string }>) => {
         // If gotten unauthorized status, reattempt on making the request, after fetching rolling token from edge
-        if (err.response?.data.status === 401 && typeof window !== "undefined") {
+        if (
+          err.response?.data.status === 401 &&
+          typeof window !== "undefined" &&
+          base !== "api_s3"
+        ) {
           const edgeResponse = await getRollingToken();
           if (edgeResponse) {
             const { token } = await edgeResponse.json();

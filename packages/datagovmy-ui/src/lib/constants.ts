@@ -172,6 +172,10 @@ export const SHORT_LANG = {
   "ms-MY": "bm",
   "en-GB": "en",
 } as const;
+export const SHORT_LANG_ALT = {
+  "ms-MY": "ms",
+  "en-GB": "en",
+} as const;
 
 /**
  * Color ordering for data-catalogue.
