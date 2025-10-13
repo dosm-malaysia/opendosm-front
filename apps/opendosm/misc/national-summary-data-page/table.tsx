@@ -75,7 +75,7 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
             },
             cell: ({ getValue, row }) => (
               <Button
-                className="text-primary border-otl-primary-200 px-2.5"
+                className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
                 onClick={() => download(getValue(), row.original.title)}
@@ -93,7 +93,7 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
             },
             cell: ({ getValue, row }) => (
               <Button
-                className="text-primary border-otl-primary-200 px-2.5"
+                className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
                 onClick={() => download(getValue(), row.original.title)}
@@ -110,7 +110,7 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
             },
             cell: ({ getValue, row }) => (
               <Button
-                className="text-primary border-otl-primary-200 px-2.5"
+                className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
                 onClick={() => download(getValue(), row.original.title)}
@@ -139,7 +139,7 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
             },
             cell: ({ getValue, row }) => (
               <Button
-                className="text-[#FFA100] hover:border-[#FFA100]/60 border-[#FFE1AD] px-2.5"
+                className="text-[#FFA100] dark:text-[#FFA100] hover:border-[#FFA100]/60 border-[#FFE1AD] px-2.5"
                 variant="default"
                 icon={<ArrowDownTrayIcon className="size-4" />}
                 onClick={() => download(getValue(), row.original.title)}
@@ -158,7 +158,7 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
         },
         cell: ({ getValue, row }) => (
           <Button
-            className="text-primary border-otl-primary-200 px-2.5"
+            className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
             variant="default"
             icon={<ExcelIcon className="size-4" />}
             onClick={() => download(getValue(), row.original.title)}
