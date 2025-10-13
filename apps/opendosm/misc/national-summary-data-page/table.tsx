@@ -36,6 +36,9 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
       columnHelper.accessor("title", {
         id: "title",
         header: t("table.title"),
+        meta: {
+          headerClass: "text-center",
+        },
         cell: ({ getValue, row }) => (
           <At
             className="text-primary hover:underline"
@@ -49,16 +52,25 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
       columnHelper.accessor("as_of", {
         id: "as_of",
         header: t("table.as_of"),
+        meta: {
+          headerClass: "text-center",
+        },
         cell: ({ getValue }) => toDate(getValue()),
       }),
       columnHelper.accessor("last_updated", {
         id: "last_updated",
         header: t("table.last_updated"),
+        meta: {
+          headerClass: "text-center",
+        },
         cell: ({ getValue }) => toDate(getValue(), "dd MMM yyyy, HH:mm"),
       }),
       columnHelper.accessor("next_update", {
         id: "next_update",
         header: t("table.next_update"),
+        meta: {
+          headerClass: "text-center",
+        },
         cell: ({ getValue }) => toDate(getValue(), "dd MMM yyyy, HH:mm"),
       }),
       columnHelper.group({
@@ -74,14 +86,16 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
               headerClass: "text-center",
             },
             cell: ({ getValue, row }) => (
-              <Button
-                className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
-                variant="default"
-                icon={<ArrowDownTrayIcon className="size-4" />}
-                onClick={() => download(getValue(), row.original.title)}
-              >
-                <span className="flex-1">SDMX-XML</span>
-              </Button>
+              <div className="flex justify-center">
+                <Button
+                  className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
+                  variant="default"
+                  icon={<ArrowDownTrayIcon className="size-4" />}
+                  onClick={() => download(getValue(), row.original.title)}
+                >
+                  <span className="flex-1">SDMX-XML</span>
+                </Button>
+              </div>
             ),
           }),
           columnHelper.accessor("sdmx_json", {
@@ -92,14 +106,16 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
               cellClass: "w-fit",
             },
             cell: ({ getValue, row }) => (
-              <Button
-                className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
-                variant="default"
-                icon={<ArrowDownTrayIcon className="size-4" />}
-                onClick={() => download(getValue(), row.original.title)}
-              >
-                <span className="flex-1">SDMX-JSON</span>
-              </Button>
+              <div className="flex justify-center">
+                <Button
+                  className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
+                  variant="default"
+                  icon={<ArrowDownTrayIcon className="size-4" />}
+                  onClick={() => download(getValue(), row.original.title)}
+                >
+                  <span className="flex-1">SDMX-JSON</span>
+                </Button>
+              </div>
             ),
           }),
           columnHelper.accessor("sdmx_csv", {
@@ -109,14 +125,16 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
               headerClass: "text-center",
             },
             cell: ({ getValue, row }) => (
-              <Button
-                className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
-                variant="default"
-                icon={<ArrowDownTrayIcon className="size-4" />}
-                onClick={() => download(getValue(), row.original.title)}
-              >
-                <span className="flex-1">SDMX-CSV</span>
-              </Button>
+              <div className="flex justify-center">
+                <Button
+                  className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
+                  variant="default"
+                  icon={<ArrowDownTrayIcon className="size-4" />}
+                  onClick={() => download(getValue(), row.original.title)}
+                >
+                  <span className="flex-1">SDMX-CSV</span>
+                </Button>
+              </div>
             ),
           }),
           columnHelper.accessor("sdmx_parquet", {
@@ -138,14 +156,16 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
               headerClass: "text-center",
             },
             cell: ({ getValue, row }) => (
-              <Button
-                className="text-[#FFA100] dark:text-[#FFA100] hover:border-[#FFA100]/60 border-[#FFE1AD] px-2.5"
-                variant="default"
-                icon={<ArrowDownTrayIcon className="size-4" />}
-                onClick={() => download(getValue(), row.original.title)}
-              >
-                <span className="flex-1">SDMX-Parquet</span>
-              </Button>
+              <div className="flex justify-center">
+                <Button
+                  className="text-[#FFA100] dark:text-[#FFA100] hover:border-[#FFA100]/60 border-[#FFE1AD] px-2.5"
+                  variant="default"
+                  icon={<ArrowDownTrayIcon className="size-4" />}
+                  onClick={() => download(getValue(), row.original.title)}
+                >
+                  <span className="flex-1">SDMX-Parquet</span>
+                </Button>
+              </div>
             ),
           }),
         ],
@@ -157,14 +177,16 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
           headerClass: "text-center",
         },
         cell: ({ getValue, row }) => (
-          <Button
-            className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
-            variant="default"
-            icon={<ExcelIcon className="size-4" />}
-            onClick={() => download(getValue(), row.original.title)}
-          >
-            <span className="flex-1">XLSX</span>
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              className="text-primary dark:text-primary-dark border-otl-primary-200 px-2.5"
+              variant="default"
+              icon={<ExcelIcon className="size-4" />}
+              onClick={() => download(getValue(), row.original.title)}
+            >
+              <span className="flex-1">XLSX</span>
+            </Button>
+          </div>
         ),
       }),
     ],
