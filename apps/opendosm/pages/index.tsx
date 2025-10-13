@@ -203,6 +203,13 @@ const Home: Page = ({
             >
               {t("common:nav.catalogue")}
             </At>
+            <At
+              className="btn btn-border bg-white px-3 py-1.5 text-sm text-black shadow-button active:bg-washed"
+              href={routes.NATIONAL_SUMMARY_DATA_PAGE}
+              enableIcon
+            >
+              {t("common:nav.national_summary_data_page")}
+            </At>
             <At className="btn px-3 py-1.5 text-sm" href="/publications" enableIcon>
               {t("common:nav.publications")}
             </At>
