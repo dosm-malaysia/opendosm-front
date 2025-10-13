@@ -13,5 +13,8 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
     "tailwindcss": "^3.3.1"
+  },
+  "dependencies": {
+    "@govtechmy/myds-style": "^1.0.0"
   }
 }

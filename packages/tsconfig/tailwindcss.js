@@ -1,4 +1,6 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
+import { preset } from "@govtechmy/myds-style";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -14,6 +16,7 @@ module.exports = {
     "./misc/**/*.{js,ts,jsx,tsx}",
     "./lib/**/*.{js,ts,jsx,tsx}",
   ],
+  presets: [preset],
   theme: {
     extend: {
       maxWidth: {
@@ -28,6 +31,7 @@ module.exports = {
         header: ["var(--font-header)"],
       },
       colors: {
+        ...colors,
         "black": "#18181B", // Zinc 900
         "primary": "#2563EB",
         "primary-dark": "#3E7AFF",

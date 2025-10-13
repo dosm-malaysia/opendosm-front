@@ -166,7 +166,7 @@
     "react-virtual": "^2.10.4",
     "react-window": "^1.8.9",
     "sonner": "^0.4.0",
-    "tailwind-merge": "^1.14.0",
+    "tailwind-merge": "^2.6.0",
     "ua-parser-js": "^1.0.38",
     "uuid": "^9.0.1"
   },

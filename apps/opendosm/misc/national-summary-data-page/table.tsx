@@ -1,5 +1,4 @@
 import {
-  Column,
   createColumnHelper,
   useReactTable,
   flexRender,
@@ -8,11 +7,15 @@ import {
 import { FunctionComponent, useMemo } from "react";
 import { DownloadItem } from "./download";
 import { useTranslation } from "datagovmy-ui/hooks";
+import { At, Button } from "datagovmy-ui/components";
+import { ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import { clx, toDate } from "datagovmy-ui/helpers";
 
 declare module "@tanstack/table-core" {
   // @ts-expect-error
   interface ColumnMeta<TData extends RowData, TValue> {
-    rowSpan?: number;
+    cellClass?: string;
+    headerClass?: string;
   }
 }
 
@@ -32,43 +35,124 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
       columnHelper.accessor("title", {
         id: "title",
         header: t("table.title"),
+        cell: ({ getValue, row }) => (
+          <At
+            className="text-primary hover:underline"
+            external={true}
+            href={row.original.title_link}
+          >
+            {getValue()}
+          </At>
+        ),
       }),
       columnHelper.accessor("as_of", {
         id: "as_of",
         header: t("table.as_of"),
+        cell: ({ getValue }) => toDate(getValue()),
       }),
       columnHelper.accessor("last_updated", {
         id: "last_updated",
         header: t("table.last_updated"),
+        cell: ({ getValue }) => toDate(getValue(), "dd MMM yyyy, HH:mm"),
       }),
       columnHelper.accessor("next_update", {
         id: "next_update",
         header: t("table.next_update"),
+        cell: ({ getValue }) => toDate(getValue(), "dd MMM yyyy, HH:mm"),
       }),
       columnHelper.group({
-        header: "SDMX",
+        header: "table.sdmx",
+        meta: {
+          headerClass: "text-center",
+        },
         columns: [
           columnHelper.accessor("sdmx_xml", {
             id: "sdmx_xml",
-            header: t("table.sdmx_xml"),
+            // header: t("table.sdmx_xml"),
+            header: "XML",
+            meta: {
+              headerClass: "text-center",
+            },
+            cell: ({ getValue }) => (
+              <Button
+                className="text-primary border-otl-primary-200 px-2.5"
+                variant="default"
+                icon={<ArrowDownTrayIcon className="size-4" />}
+              >
+                SDMX-XML
+              </Button>
+            ),
           }),
           columnHelper.accessor("sdmx_json", {
             id: "sdmx_json",
-            header: t("table.sdmx_json"),
+            // header: t("table.sdmx_json"),
+            header: "JSON",
+            meta: {
+              headerClass: "text-center",
+              cellClass: "w-fit",
+            },
+            cell: ({ getValue }) => (
+              <Button
+                className="text-primary border-otl-primary-200 px-2.5"
+                variant="default"
+                icon={<ArrowDownTrayIcon className="size-4" />}
+              >
+                SDMX-JSON
+              </Button>
+            ),
           }),
           columnHelper.accessor("sdmx_csv", {
             id: "sdmx_csv",
-            header: t("table.sdmx_csv"),
+            // header: t("table.sdmx_csv"),
+            header: "CSV",
+            meta: {
+              headerClass: "text-center",
+            },
+            cell: ({ getValue }) => (
+              <Button
+                className="text-primary border-otl-primary-200 px-2.5"
+                variant="default"
+                icon={<ArrowDownTrayIcon className="size-4" />}
+              >
+                SDMX-CSV
+              </Button>
+            ),
           }),
           columnHelper.accessor("sdmx_parquet", {
             id: "sdmx_parquet",
-            header: t("table.sdmx_parquet"),
+            // header: t("table.sdmx_parquet"),
+            header: "Parquet",
+            meta: {
+              headerClass: "text-center",
+            },
+            cell: ({ getValue }) => (
+              <Button
+                className="text-[#FFA100] hover:border-[#FFA100]/60 border-[#FFE1AD] px-2.5"
+                variant="default"
+                icon={<ArrowDownTrayIcon className="size-4" />}
+              >
+                SDMX-Parquet
+              </Button>
+            ),
           }),
         ],
       }),
       columnHelper.display({
         id: "sdmx_excel",
-        header: t("table.sdmx_excel"),
+        // header: t("table.sdmx_excel"),
+        header: "Excel",
+        meta: {
+          headerClass: "text-center",
+        },
+        cell: ({ getValue }) => (
+          <Button
+            className="text-primary border-otl-primary-200 px-2.5"
+            variant="default"
+            icon={<ArrowDownTrayIcon className="size-4" />}
+          >
+            XLSX
+          </Button>
+        ),
       }),
     ],
     []
@@ -81,8 +165,8 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
   });
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto border-collapse border border-outline dark:border-washed-dark">
+    <div className="overflow-x-scroll max-w-full">
+      <table className="min-w-full w-full table-auto border-collapse border border-otl-gray-200">
         <thead>
           {table.getHeaderGroups().map(headerGroup => {
             return (
@@ -104,7 +188,10 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
                       key={header.id}
                       colSpan={header.colSpan}
                       rowSpan={rowSpan}
-                      className="border border-outline dark:border-washed-dark p-3 text-left text-xs leading-[18px] font-medium text-dim dark:text-white"
+                      className={clx(
+                        "border border-otl-gray-200 p-3 text-left text-body-xs font-medium text-txt-black-500",
+                        header.column.columnDef.meta?.headerClass
+                      )}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
@@ -115,18 +202,38 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
           })}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td
-                  key={cell.id}
-                  className="border border-outline dark:border-washed-dark px-4 py-2"
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {table.getRowModel().rows.map((row, index) => {
+            if (row.original.category) {
+              return (
+                <tr key={`explanation-${index}`}>
+                  <td
+                    colSpan={9}
+                    className="border-b border-otl-gray-200 bg-bg-washed p-3 text-center text-body-sm italic"
+                  >
+                    {row.original.category}
+                  </td>
+                </tr>
+              );
+            }
+
+            return (
+              <tr key={row.id}>
+                {row.getVisibleCells().map(cell => {
+                  return (
+                    <td
+                      key={cell.id}
+                      className={clx(
+                        "border-y border-otl-gray-200 p-1.5 text-body-sm font-medium text-txt-black-900",
+                        cell.column.columnDef.meta?.cellClass
+                      )}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

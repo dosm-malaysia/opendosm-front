@@ -1,6 +1,9 @@
 import Nexti18NextConfig from "../next-i18next.config";
 import Layout from "@components/Layout";
 import { Progress, Toast } from "datagovmy-ui/components";
+import "@govtechmy/myds-style/color.css";
+import "@govtechmy/myds-style/light.css";
+import "@govtechmy/myds-style/dark.css";
 import "datagovmy-ui/styles";
 import { body, header } from "datagovmy-ui/configs/font";
 import mixpanelConfig from "datagovmy-ui/configs/mixpanel";
