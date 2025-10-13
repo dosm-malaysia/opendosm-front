@@ -62,7 +62,7 @@ const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTab
         cell: ({ getValue }) => toDate(getValue(), "dd MMM yyyy, HH:mm"),
       }),
       columnHelper.group({
-        header: "table.sdmx",
+        header: t("table.sdmx"),
         meta: {
           headerClass: "text-center",
         },
