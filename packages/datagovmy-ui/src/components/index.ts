@@ -44,6 +44,7 @@ export { default as Textarea } from "./Textarea";
 export { default as Toast, toast } from "./Toast";
 export { default as Toggle } from "./Toggle";
 export { default as Tooltip } from "./Tooltip";
+export { Tooltip as TooltipAlt, TooltipContent, TooltipTrigger } from "./Tooltip/tooltip-alt";
 export { default as ThemeToggle } from "./Nav/theme";
 
 /** Derivatives */
