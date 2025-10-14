@@ -3,15 +3,19 @@ import { createElement, ReactElement } from "react";
 import { CountryAndStates } from "./constants";
 import DomToImage from "dom-to-image";
 import canvasToSvg from "canvas2svg";
-import { ClassNameValue, extendTailwindMerge } from "tailwind-merge";
+import { ClassNameValue, extendTailwindMerge, getDefaultConfig } from "tailwind-merge";
 
 /**
  * When using myds, we will reach limitation to extended theme, particulary font-size and font-color, where both using using `text-*`.
  * in MYDS, we have "text-heading-md" and "text-txt-black-900", which are grouped together its utility grouping in twMerge, hence when the two used together, the former definition will be dropped.
  * This is the solution to fix the issue.
  */
+
+// grab default config
+const defaultConfig = getDefaultConfig();
+
 const twMerge = extendTailwindMerge({
-  override: {
+  extend: {
     classGroups: {
       "font-size": [
         {
@@ -20,6 +24,8 @@ const twMerge = extendTailwindMerge({
             (cls: string) => cls.startsWith("body-"),
           ],
         },
+        // and preserve default ones
+        ...defaultConfig.classGroups["font-size"],
       ],
     },
   },

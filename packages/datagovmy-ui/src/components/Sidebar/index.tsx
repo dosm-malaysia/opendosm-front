@@ -7,6 +7,7 @@ import { clx } from "../../lib/helpers";
 
 interface SidebarProps {
   children: ReactNode;
+  reverse?: true | string;
   categories: Array<[category: string, subcategory: string[]]>;
   onSelect: (index: string) => void;
   sidebarTitle?: string;
@@ -22,6 +23,7 @@ interface SidebarProps {
 
 const Sidebar: FunctionComponent<SidebarProps> = ({
   children,
+  reverse,
   categories,
   onSelect,
   sidebarTitle,
@@ -31,7 +33,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
 }) => {
   const { t } = useTranslation(["catalogue", "common"]);
   const [selected, setSelected] = useState<string>(
-    initialSelected ?? Array.isArray(categories[0]) ? categories[0][0] : categories[0]
+    (initialSelected ?? Array.isArray(categories[0])) ? categories[0][0] : categories[0]
   );
   const [show, setShow] = useState<boolean>(false);
   const styles = {
@@ -43,9 +45,14 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
 
   return (
     <>
-      <div className="flex w-full flex-row">
+      <div className={clx("flex w-full flex-row", reverse && "flex-row-reverse gap-8")}>
         {/* Desktop */}
-        <div className="dark:border-r-washed-dark hidden border-r lg:block lg:w-1/5 xl:w-1/5">
+        <div
+          className={clx(
+            "dark:border-r-washed-dark hidden border-r lg:block lg:w-1/5 xl:w-1/5",
+            reverse && `border-r-0 ${typeof reverse === "string" && reverse}`
+          )}
+        >
           <ul className="sticky top-14 flex h-[calc(100dvh-56px)] flex-col gap-2 overflow-auto pb-6 pt-3">
             <li>
               <h5 className={styles.base}>{sidebarTitle ?? t("category")}</h5>
