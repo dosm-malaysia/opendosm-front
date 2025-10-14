@@ -8,6 +8,7 @@ import { AnalyticsProvider } from "datagovmy-ui/contexts/analytics";
 import NationalSummaryDataPageLayout from "misc/nsdp/layout";
 import NationalSummaryDataPageDownload from "misc/nsdp/download";
 import { SHORT_LANG_ALT } from "datagovmy-ui/constants";
+import NSDPReal from "misc/nsdp/real";
 
 const NationalSummaryDataPage: Page = ({
   meta,
@@ -25,7 +26,7 @@ const NationalSummaryDataPage: Page = ({
               {
                 {
                   download: <NationalSummaryDataPageDownload download={download} />,
-                  real: <div>hi2</div>,
+                  real: <NSDPReal />,
                   fiscal: <div>hi3</div>,
                   financial: <div>hi4</div>,
                   external: <div>hi5</div>,
