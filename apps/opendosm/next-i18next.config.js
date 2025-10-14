@@ -33,7 +33,7 @@ const namespaces = [
   "dashboard-wellbeing",
   "gui-opendosm-pub",
   "odin",
-  "national-summary-data-page",
+  "nsdp",
 ];
 
 module.exports = defineConfig(namespaces, ["common", "agencies", "division", "dashboards"]);

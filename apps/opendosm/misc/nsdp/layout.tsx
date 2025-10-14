@@ -15,7 +15,7 @@ interface NationalSummaryDataPageLayoutProps {
 const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLayoutProps> = ({
   children,
 }) => {
-  const { t } = useTranslation(["national-summary-data-page"]);
+  const { t } = useTranslation(["nsdp"]);
 
   const TAB_OPTIONS: Array<OptionType> = [
     {

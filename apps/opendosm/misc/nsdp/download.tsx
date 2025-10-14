@@ -33,7 +33,7 @@ type DownloadTabProps = {
 };
 
 const NationalSummaryDataPageDownload: FunctionComponent<DownloadTabProps> = ({ download }) => {
-  const { t } = useTranslation(["national-summary-data-page"]);
+  const { t } = useTranslation(["nsdp"]);
 
   return (
     <Section title={t("section_download.title")} description={t("section_download.description")}>

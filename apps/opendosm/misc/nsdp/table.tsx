@@ -27,7 +27,7 @@ interface NationalSummaryDataPageTableProps {
 const NationalSummaryDataPageTable: FunctionComponent<NationalSummaryDataPageTableProps> = ({
   data = [],
 }) => {
-  const { t } = useTranslation(["national-summary-data-page"]);
+  const { t } = useTranslation(["nsdp"]);
 
   const columnHelper = createColumnHelper<DownloadItem>();
 

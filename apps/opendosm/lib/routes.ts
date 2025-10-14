@@ -31,7 +31,7 @@ export const routes = {
   GUI_OPENDOSM_PUB: "/gui/opendosm-pub",
   GUI_CATALOGUE: "/gui/catalogue",
   ODIN: "/odin-self-assessment",
-  NATIONAL_SUMMARY_DATA_PAGE: "/national-summary-data-page",
+  NATIONAL_SUMMARY_DATA_PAGE: "/nsdp",
 };
 
 export const static_routes: string[] = (() => {

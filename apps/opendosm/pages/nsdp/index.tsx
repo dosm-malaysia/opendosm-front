@@ -5,15 +5,15 @@ import { Container, Metadata } from "datagovmy-ui/components";
 import { useTranslation } from "datagovmy-ui/hooks";
 import { withi18n } from "datagovmy-ui/decorators";
 import { AnalyticsProvider } from "datagovmy-ui/contexts/analytics";
-import NationalSummaryDataPageLayout from "misc/national-summary-data-page/layout";
-import NationalSummaryDataPageDownload from "misc/national-summary-data-page/download";
+import NationalSummaryDataPageLayout from "misc/nsdp/layout";
+import NationalSummaryDataPageDownload from "misc/nsdp/download";
 import { SHORT_LANG_ALT } from "datagovmy-ui/constants";
 
 const NationalSummaryDataPage: Page = ({
   meta,
   download,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { t } = useTranslation(["national-summary-data-page"]);
+  const { t } = useTranslation(["nsdp"]);
 
   return (
     <AnalyticsProvider meta={meta}>
@@ -42,28 +42,25 @@ const NationalSummaryDataPage: Page = ({
   );
 };
 
-export const getStaticProps: GetStaticProps = withi18n(
-  "national-summary-data-page",
-  async ({ locale }) => {
-    const { data: download } = await get(
-      `/sdmx/download_${SHORT_LANG_ALT[locale]}.json`,
-      undefined,
-      "api_s3"
-    );
+export const getStaticProps: GetStaticProps = withi18n("nsdp", async ({ locale }) => {
+  const { data: download } = await get(
+    `/sdmx/download_${SHORT_LANG_ALT[locale]}.json`,
+    undefined,
+    "api_s3"
+  );
 
-    return {
-      notFound: false,
-      props: {
-        meta: {
-          id: "national-summary-data-page",
-          type: "dashboard",
-          category: "rate-statistics",
-          agency: "DOSM",
-        },
-        download,
+  return {
+    notFound: false,
+    props: {
+      meta: {
+        id: "nsdp",
+        type: "dashboard",
+        category: "rate-statistics",
+        agency: "DOSM",
       },
-    };
-  }
-);
+      download,
+    },
+  };
+});
 
 export default NationalSummaryDataPage;
