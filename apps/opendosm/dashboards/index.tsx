@@ -211,6 +211,7 @@ const Ranking = ({ ranks, views, tabs }: RankingProps) => {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {ranks.map((item, i) => (
           <At
+            key={item.route}
             href={item.route}
             locale={i18n.language}
             prefetch={false}

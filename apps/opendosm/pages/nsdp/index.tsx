@@ -27,13 +27,13 @@ const NationalSummaryDataPage: Page = ({
       <WindowProvider>
         <Metadata title={t("header")} description={t("description")} keywords={""} />
         <NationalSummaryDataPageLayout>
-          {tab_index => (
+          {(tab_index, chartColor) => (
             <Container className="w-full flex divide-y-0">
               <div className="flex-1">
                 {
                   {
                     download: <NationalSummaryDataPageDownload download={download} />,
-                    real: <NSDPReal real={real} />,
+                    real: <NSDPReal real={real} chartColor={chartColor} />,
                     fiscal: (
                       <NSDPFiscal
                         categories={[

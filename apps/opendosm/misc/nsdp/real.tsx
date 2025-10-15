@@ -1,5 +1,5 @@
 import { Button, Section, Sidebar } from "datagovmy-ui/components";
-import { AKSARA_COLOR, BREAKPOINTS } from "datagovmy-ui/constants";
+import { BREAKPOINTS } from "datagovmy-ui/constants";
 import { SliderProvider } from "datagovmy-ui/contexts/slider";
 import { WindowContext } from "datagovmy-ui/contexts/window";
 import { clx } from "datagovmy-ui/helpers";
@@ -10,9 +10,10 @@ import NSDPTimeseriesSection from "./ts-section";
 
 type RealTabProps = {
   real: Record<string, WithData<Record<string, Record<string, number[]>>> & { x_freq: string }>;
+  chartColor: [string, string];
 };
 
-const NSDPReal: FunctionComponent<RealTabProps> = ({ real }) => {
+const NSDPReal: FunctionComponent<RealTabProps> = ({ real, chartColor }) => {
   const { t } = useTranslation(["nsdp"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const { size } = useContext(WindowContext);
@@ -71,7 +72,7 @@ const NSDPReal: FunctionComponent<RealTabProps> = ({ real }) => {
                   baseTranslation={`section_real.${section}`}
                   datum={dt}
                   play={play}
-                  chartColor={[AKSARA_COLOR.ORANGE, AKSARA_COLOR.ORANGE_H]}
+                  chartColor={chartColor}
                   chartData={Object.keys(Object.values(dt.data)[0])
                     .filter(cd => cd !== "x" && cd !== "overall")
                     .map(cd => cd)}

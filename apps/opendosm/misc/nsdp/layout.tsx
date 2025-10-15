@@ -1,4 +1,5 @@
 import { AgencyBadge, Hero } from "datagovmy-ui/components";
+import { AKSARA_COLOR } from "datagovmy-ui/constants";
 import { clx } from "datagovmy-ui/helpers";
 import { useData, useTranslation } from "datagovmy-ui/hooks";
 import { OptionType } from "datagovmy-ui/types";
@@ -9,7 +10,7 @@ import { FunctionComponent, ReactNode } from "react";
  * @overview Status: Live
  */
 interface NationalSummaryDataPageLayoutProps {
-  children: (tab_index: string) => ReactNode;
+  children: (tab_index: string, chartColor: [string, string]) => ReactNode;
 }
 
 const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLayoutProps> = ({
@@ -52,11 +53,52 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
     tab_index: TAB_OPTIONS[0].value,
   });
 
+  const getHeroBackgroundColor = (tab_index: string) => {
+    switch (tab_index) {
+      case "fiscal":
+        return "red";
+      case "financial":
+        return "gray";
+      case "external":
+        return "green";
+
+      default:
+        return "blue";
+    }
+  };
+  const getCategoryTextColor = (tab_index: string) => {
+    switch (tab_index) {
+      case "fiscal":
+        return "text-danger";
+      case "financial":
+        return "text-black dark:text-white";
+      case "external":
+        return "text-[#16A34A]";
+
+      default:
+        return "text-primary dark:text-primary-dark";
+    }
+  };
+
+  const getChartColor = (tab_index: string): [string, string] => {
+    switch (tab_index) {
+      case "fiscal":
+        return [AKSARA_COLOR.DANGER, AKSARA_COLOR.DANGER_H];
+      case "financial":
+        return [AKSARA_COLOR.GREY, AKSARA_COLOR.GREY_H];
+      case "external":
+        return [AKSARA_COLOR.GREEN, AKSARA_COLOR.GREEN_H];
+
+      default:
+        return [AKSARA_COLOR.PRIMARY, AKSARA_COLOR.PRIMARY_H];
+    }
+  };
+
   return (
     <>
       <Hero
-        background="blue"
-        category={[t("common:categories.summary"), "text-primary dark:text-primary-dark"]}
+        background={getHeroBackgroundColor(data.tab_index)}
+        category={[t("common:categories.summary"), getCategoryTextColor(data.tab_index)]}
         header={[t("header")]}
         description={[t("description")]}
         agencyBadge={<AgencyBadge agency="dosm" />}
@@ -89,7 +131,7 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
         </div>
       </nav>
 
-      {children(data.tab_index)}
+      {children(data.tab_index, getChartColor(data.tab_index))}
     </>
   );
 };
