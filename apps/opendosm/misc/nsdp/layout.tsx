@@ -56,7 +56,7 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
     <>
       <Hero
         background="blue"
-        category={[t("common:categories.rate-statistics"), "text-primary dark:text-primary-dark"]}
+        category={[t("common:categories.summary"), "text-primary dark:text-primary-dark"]}
         header={[t("header")]}
         description={[t("description")]}
         agencyBadge={<AgencyBadge agency="dosm" />}
