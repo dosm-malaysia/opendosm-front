@@ -16,7 +16,7 @@ const NSDPReal: FunctionComponent<RealTabProps> = ({ real }) => {
   const { t } = useTranslation(["nsdp"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const { size } = useContext(WindowContext);
-  const data = Object.entries(real);
+  const data = Object.entries(real) || [];
 
   return (
     <Sidebar
@@ -46,7 +46,7 @@ const NSDPReal: FunctionComponent<RealTabProps> = ({ real }) => {
                     onSelect(`${category}`);
                   }}
                 >
-                  {`section_real.${category}`}
+                  {t(`section_real.${category}.title`)}
                 </Button>
               </li>
             ))}
