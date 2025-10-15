@@ -20,6 +20,7 @@ const NationalSummaryDataPage: Page = ({
   meta,
   download,
   real,
+  // fiscal, financial, external, socio, arc
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["nsdp"]);
   return (
@@ -34,51 +35,11 @@ const NationalSummaryDataPage: Page = ({
                   {
                     download: <NationalSummaryDataPageDownload download={download} />,
                     real: <NSDPReal real={real} chartColor={chartColor} />,
-                    fiscal: (
-                      <NSDPFiscal
-                        categories={[
-                          ["government-revenue", []],
-                          ["government-expenditure", []],
-                          ["budget-deficit", []],
-                        ]}
-                      />
-                    ),
-                    financial: (
-                      <NSDPFinancial
-                        categories={[
-                          ["banking-sector", []],
-                          ["capital-markets", []],
-                          ["financial-inclusion", []],
-                        ]}
-                      />
-                    ),
-                    external: (
-                      <NSDPExternal
-                        categories={[
-                          ["trade-balance", []],
-                          ["foreign-investment", []],
-                          ["exchange-rates", []],
-                        ]}
-                      />
-                    ),
-                    socio: (
-                      <NSDPSocio
-                        categories={[
-                          ["population-demographics", []],
-                          ["education-indicators", []],
-                          ["health-outcomes", []],
-                        ]}
-                      />
-                    ),
-                    arc: (
-                      <NSDPArc
-                        categories={[
-                          ["research-development", []],
-                          ["innovation-index", []],
-                          ["technology-adoption", []],
-                        ]}
-                      />
-                    ),
+                    fiscal: <NSDPFiscal fiscal={real} chartColor={chartColor} />,
+                    financial: <NSDPFinancial financial={real} chartColor={chartColor} />,
+                    external: <NSDPExternal external={real} chartColor={chartColor} />,
+                    socio: <NSDPSocio socio={real} chartColor={chartColor} />,
+                    arc: <NSDPArc arc={real} chartColor={chartColor} />,
                   }[tab_index]
                 }
               </div>
@@ -94,11 +55,21 @@ export const getStaticProps: GetStaticProps = withi18n("nsdp", async ({ locale }
   const results = await Promise.allSettled([
     get(`/sdmx/download_${SHORT_LANG_ALT[locale]}.json`, undefined, "api_s3"),
     get(`/sdmx/dashboard-real.json`, undefined, "api_s3"),
+    // Add file fetching here
+    // get(`/sdmx/dashboard-fiscal.json`, undefined, "api_s3"),
+    // get(`/sdmx/dashboard-financial.json`, undefined, "api_s3"),
+    // get(`/sdmx/dashboard-external.json`, undefined, "api_s3"),
+    // get(`/sdmx/dashboard-socio.json`, undefined, "api_s3"),
+    // get(`/sdmx/dashboard-arc.json`, undefined, "api_s3"),
   ]).catch(e => {
     throw new Error(e);
   });
 
-  const [download, real] = results.map(e => {
+  const [
+    download,
+    real,
+    // fiscal, financial, external, socio, arc
+  ] = results.map(e => {
     if (e.status === "rejected") return null;
     else return e.value.data;
   });
@@ -114,6 +85,7 @@ export const getStaticProps: GetStaticProps = withi18n("nsdp", async ({ locale }
       },
       download,
       real,
+      // fiscal, financial, external, socio, arc
     },
   };
 });

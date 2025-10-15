@@ -1,30 +1,34 @@
 import { Button, Section, Sidebar } from "datagovmy-ui/components";
 import { BREAKPOINTS } from "datagovmy-ui/constants";
+import { SliderProvider } from "datagovmy-ui/contexts/slider";
 import { WindowContext } from "datagovmy-ui/contexts/window";
 import { clx } from "datagovmy-ui/helpers";
 import { useTranslation } from "datagovmy-ui/hooks";
-import { DateTime } from "luxon";
-import { FunctionComponent, useContext, useRef } from "react";
+import { WithData } from "datagovmy-ui/types";
+import { Fragment, FunctionComponent, useContext, useRef } from "react";
+import NSDPTimeseriesSection from "./ts-section";
 
 type FiscalTabProps = {
-  categories: [category: string, subcategory: string[]][];
+  fiscal: Record<string, WithData<Record<string, Record<string, number[]>>> & { x_freq: string }>;
+  chartColor: [string, string];
 };
 
-const NSDPFiscal: FunctionComponent<FiscalTabProps> = ({ categories }) => {
+const NSDPFiscal: FunctionComponent<FiscalTabProps> = ({ fiscal, chartColor }) => {
   const { t } = useTranslation(["nsdp"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const { size } = useContext(WindowContext);
+  const data = Object.entries(fiscal) || [];
 
   return (
     <Sidebar
       sidebarTitle={t("on_this_page")}
       reverse={"pt-6"}
-      categories={categories}
+      categories={data.map(category => [category[0], []])}
       onSelect={selected =>
         scrollRef.current[selected]?.scrollIntoView({
           behavior: "smooth",
-          block: size.width <= BREAKPOINTS.LG ? "start" : "center",
-          inline: "end",
+          block: size.width <= BREAKPOINTS.LG ? "start" : "start",
+          inline: "start",
         })
       }
       mobileClassName="top-6"
@@ -43,7 +47,7 @@ const NSDPFiscal: FunctionComponent<FiscalTabProps> = ({ categories }) => {
                     onSelect(`${category}`);
                   }}
                 >
-                  {category}
+                  {t(`section_fiscal.${category}.title`)}
                 </Button>
               </li>
             ))}
@@ -52,28 +56,31 @@ const NSDPFiscal: FunctionComponent<FiscalTabProps> = ({ categories }) => {
       }}
     >
       {size.width < BREAKPOINTS.LG && <div className="pt-12" />}
-      <Section
-        title={t("section_fiscal.title")}
-        description={t("section_fiscal.description")}
-        date={DateTime.now().toSQL()}
-        ref={ref => {
-          scrollRef.current[categories[0][0]] = ref;
-        }}
-      ></Section>
-      <Section
-        title={t("section_fiscal.title")}
-        description={t("section_fiscal.description")}
-        ref={ref => {
-          scrollRef.current[categories[1][0]] = ref;
-        }}
-      ></Section>
-      <Section
-        title={t("section_fiscal.title")}
-        description={t("section_fiscal.description")}
-        ref={ref => {
-          scrollRef.current[categories[2][0]] = ref;
-        }}
-      ></Section>
+      {data.map(([section, dt]) => (
+        <Fragment key={section}>
+          <SliderProvider>
+            {play => (
+              <Section
+                title={t(`section_fiscal.${section}.title`)}
+                date={dt.data_as_of}
+                ref={ref => {
+                  scrollRef.current[section] = ref;
+                }}
+              >
+                <NSDPTimeseriesSection
+                  baseTranslation={`section_fiscal.${section}`}
+                  datum={dt}
+                  play={play}
+                  chartColor={chartColor}
+                  chartData={Object.keys(Object.values(dt.data)[0])
+                    .filter(cd => cd !== "x" && cd !== "overall")
+                    .map(cd => cd)}
+                />
+              </Section>
+            )}
+          </SliderProvider>
+        </Fragment>
+      ))}
     </Sidebar>
   );
 };
