@@ -1,9 +1,10 @@
 import { AgencyBadge, Hero } from "datagovmy-ui/components";
 import { AKSARA_COLOR } from "datagovmy-ui/constants";
 import { clx } from "datagovmy-ui/helpers";
-import { useData, useTranslation } from "datagovmy-ui/hooks";
+import { useTranslation } from "datagovmy-ui/hooks";
 import { OptionType } from "datagovmy-ui/types";
 import { FunctionComponent, ReactNode } from "react";
+import { useRouter } from "next/router";
 
 /**
  * National Summary Data Page Layout
@@ -17,6 +18,7 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
   children,
 }) => {
   const { t } = useTranslation(["nsdp"]);
+  const router = useRouter();
 
   const TAB_OPTIONS: Array<OptionType> = [
     {
@@ -49,9 +51,7 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
     },
   ];
 
-  const { data, setData } = useData({
-    tab_index: TAB_OPTIONS[0].value,
-  });
+  const tab_index = (router.query.tab as string) || "download";
 
   const getHeroBackgroundColor = (tab_index: string) => {
     switch (tab_index) {
@@ -94,11 +94,15 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
     }
   };
 
+  const handleTabClick = (value: string) => {
+    router.push({ query: { ...router.query, tab: value } }, undefined, { shallow: true });
+  };
+
   return (
     <>
       <Hero
-        background={getHeroBackgroundColor(data.tab_index)}
-        category={[t("common:categories.summary"), getCategoryTextColor(data.tab_index)]}
+        background={getHeroBackgroundColor(tab_index)}
+        category={[t("common:categories.summary"), getCategoryTextColor(tab_index)]}
         header={[t("header")]}
         description={[t("description")]}
         agencyBadge={<AgencyBadge agency="dosm" />}
@@ -110,18 +114,18 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
             <div key={tab.value} className="snap-start">
               <div
                 className="flex h-full min-w-[56px] cursor-pointer items-center justify-center px-3 outline-none"
-                onClick={() => setData("tab_index", tab.value)}
+                onClick={() => handleTabClick(tab.value)}
               >
                 <div className="relative flex h-full flex-col items-center justify-center px-2 py-4">
                   <div
                     className={clx(
                       "flex items-center gap-2",
-                      data.tab_index === tab.value ? "text-black dark:text-white" : "text-dim"
+                      tab_index === tab.value ? "text-black dark:text-white" : "text-dim"
                     )}
                   >
                     <span className="whitespace-nowrap text-base font-medium">{tab.label}</span>
                   </div>
-                  {data.tab_index === tab.value && (
+                  {tab_index === tab.value && (
                     <div className="absolute bottom-0 inline-flex h-[2px] w-full min-w-[56px] rounded-full bg-primary dark:bg-primary-dark" />
                   )}
                 </div>
@@ -131,7 +135,7 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
         </div>
       </nav>
 
-      {children(data.tab_index, getChartColor(data.tab_index))}
+      {children(tab_index, getChartColor(tab_index))}
     </>
   );
 };
