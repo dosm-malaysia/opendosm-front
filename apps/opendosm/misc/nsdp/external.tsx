@@ -31,6 +31,7 @@ const NSDPExternal: FunctionComponent<ExternalTabProps> = ({ external, chartColo
           inline: "start",
         })
       }
+      sidebarClassName="top-28"
       mobileClassName="top-6"
       customList={(setSelected, onSelect, categories, selected) => {
         return (

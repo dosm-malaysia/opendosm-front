@@ -11,6 +11,7 @@ interface SidebarProps {
   categories: Array<[category: string, subcategory: string[]]>;
   onSelect: (index: string) => void;
   sidebarTitle?: string;
+  sidebarClassName?: string;
   mobileClassName?: string;
   initialSelected?: string;
   customList?: (
@@ -27,6 +28,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   categories,
   onSelect,
   sidebarTitle,
+  sidebarClassName,
   mobileClassName,
   initialSelected,
   customList,
@@ -53,7 +55,12 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             reverse && `border-r-0 ${typeof reverse === "string" && reverse}`
           )}
         >
-          <ul className="sticky top-14 flex h-[calc(100dvh-56px)] flex-col gap-2 overflow-auto pb-6 pt-3">
+          <ul
+            className={clx(
+              "sticky top-14 flex h-[calc(100dvh-56px)] flex-col gap-2 overflow-auto pb-6 pt-3",
+              sidebarClassName
+            )}
+          >
             <li>
               <h5 className={styles.base}>{sidebarTitle ?? t("category")}</h5>
             </li>
