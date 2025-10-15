@@ -62,7 +62,6 @@ const NSDPReal: FunctionComponent<RealTabProps> = ({ real, chartColor }) => {
             {play => (
               <Section
                 title={t(`section_real.${section}.title`)}
-                description={t(`section_real.${section}.description`)}
                 date={dt.data_as_of}
                 ref={ref => {
                   scrollRef.current[section] = ref;
