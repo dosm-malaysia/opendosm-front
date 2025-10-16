@@ -45,10 +45,10 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
       label: t("keys.socio"),
       value: "socio",
     },
-    {
-      label: t("keys.arc"),
-      value: "arc",
-    },
+    // {
+    //   label: t("keys.arc"),
+    //   value: "arc",
+    // },
   ];
 
   const tab_index = (router.query.tab as string) || "download";

@@ -20,7 +20,11 @@ const NationalSummaryDataPage: Page = ({
   meta,
   download,
   real,
-  // fiscal, financial, external, socio, arc
+  fiscal,
+  financial,
+  external,
+  socio,
+  // arc
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t, i18n } = useTranslation(["nsdp"]);
   return (
@@ -40,11 +44,11 @@ const NationalSummaryDataPage: Page = ({
                   {
                     download: <NationalSummaryDataPageDownload download={download} />,
                     real: <NSDPReal real={real} chartColor={chartColor} />,
-                    fiscal: <NSDPFiscal fiscal={real} chartColor={chartColor} />,
-                    financial: <NSDPFinancial financial={real} chartColor={chartColor} />,
-                    external: <NSDPExternal external={real} chartColor={chartColor} />,
-                    socio: <NSDPSocio socio={real} chartColor={chartColor} />,
-                    arc: <NSDPArc arc={real} chartColor={chartColor} />,
+                    fiscal: <NSDPFiscal fiscal={fiscal} chartColor={chartColor} />,
+                    financial: <NSDPFinancial financial={financial} chartColor={chartColor} />,
+                    external: <NSDPExternal external={external} chartColor={chartColor} />,
+                    socio: <NSDPSocio socio={socio} chartColor={chartColor} />,
+                    // arc: <NSDPArc arc={real} chartColor={chartColor} />,
                   }[tab_index]
                 }
               </div>
@@ -60,11 +64,10 @@ export const getStaticProps: GetStaticProps = withi18n("nsdp", async ({ locale }
   const results = await Promise.allSettled([
     get(`/sdmx/download_${SHORT_LANG_ALT[locale]}.json`, undefined, "api_s3"),
     get(`/sdmx/dashboard-real.json`, undefined, "api_s3"),
-    // Add file fetching here
-    // get(`/sdmx/dashboard-fiscal.json`, undefined, "api_s3"),
-    // get(`/sdmx/dashboard-financial.json`, undefined, "api_s3"),
-    // get(`/sdmx/dashboard-external.json`, undefined, "api_s3"),
-    // get(`/sdmx/dashboard-socio.json`, undefined, "api_s3"),
+    get(`/sdmx/dashboard-fiscal.json`, undefined, "api_s3"),
+    get(`/sdmx/dashboard-financial.json`, undefined, "api_s3"),
+    get(`/sdmx/dashboard-external.json`, undefined, "api_s3"),
+    get(`/sdmx/dashboard-demographic.json`, undefined, "api_s3"),
     // get(`/sdmx/dashboard-arc.json`, undefined, "api_s3"),
   ]).catch(e => {
     throw new Error(e);
@@ -73,7 +76,11 @@ export const getStaticProps: GetStaticProps = withi18n("nsdp", async ({ locale }
   const [
     download,
     real,
-    // fiscal, financial, external, socio, arc
+    fiscal,
+    financial,
+    external,
+    socio,
+    // arc
   ] = results.map(e => {
     if (e.status === "rejected") return null;
     else return e.value.data;
@@ -90,7 +97,11 @@ export const getStaticProps: GetStaticProps = withi18n("nsdp", async ({ locale }
       },
       download,
       real,
-      // fiscal, financial, external, socio, arc
+      fiscal,
+      financial,
+      external,
+      socio,
+      // arc
     },
   };
 });
