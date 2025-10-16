@@ -22,11 +22,16 @@ const NationalSummaryDataPage: Page = ({
   real,
   // fiscal, financial, external, socio, arc
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { t } = useTranslation(["nsdp"]);
+  const { t, i18n } = useTranslation(["nsdp"]);
   return (
     <AnalyticsProvider meta={meta}>
       <WindowProvider>
-        <Metadata title={t("header")} description={t("description")} keywords={""} />
+        <Metadata
+          title={t("header")}
+          description={t("description")}
+          keywords={""}
+          image={`${process.env.NEXT_PUBLIC_API_S3_URL}/sdmx/og_${SHORT_LANG_ALT[i18n.language]}.png`}
+        />
         <NationalSummaryDataPageLayout>
           {(tab_index, chartColor) => (
             <Container className="w-full flex divide-y-0">
