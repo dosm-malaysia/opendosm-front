@@ -105,7 +105,7 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
         category={[t("common:categories.summary"), getCategoryTextColor(tab_index)]}
         header={[t("header")]}
         description={[t("description")]}
-        agencyBadge={<AgencyBadge agency="dosm" />}
+        // agencyBadge={<AgencyBadge agency="dosm" />}
       />
 
       <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center">
