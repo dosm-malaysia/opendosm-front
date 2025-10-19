@@ -53,7 +53,8 @@ const NSDPTimeseriesSection: FC<TimeseriesSectionProps> = ({
 
   const configs = useCallback<(key: string) => { unit: string; callout: string; fill: boolean }>(
     (key: string) => {
-      const unit = data.index_type.value === "value" ? "" : "%";
+      const percentUnits = ["growth", "growth_yoy", "growth_mom", "growth_qoq"];
+      const unit = percentUnits.includes(data.index_type.value) ? "%" : data.index_type.value === "rm" ? "RM" : "";
       const callout = [
         numFormat(
           datum.data[data.index_type.value][key][datum.data[data.index_type.value][key].length - 1],
