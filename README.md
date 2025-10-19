@@ -110,6 +110,6 @@ Thank you for creating them.
 
 ## License
 
-data.gov.my is licensed under [MIT](./LICENSE.md)
+open.dosm.gov.my is licensed under [MIT](./LICENSE.md)
 
 Copyright © 2023 Department of Statistics Malaysia
