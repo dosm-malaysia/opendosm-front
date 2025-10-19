@@ -32,7 +32,7 @@ const NationalSummaryDataPage: Page = ({
       <WindowProvider>
         <Metadata
           title={t("header")}
-          description={t("description")}
+          description={t("description_og")}
           keywords={""}
           image={`${process.env.NEXT_PUBLIC_API_S3_URL}/sdmx/og_${SHORT_LANG_ALT[i18n.language]}.png`}
         />
