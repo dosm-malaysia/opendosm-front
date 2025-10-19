@@ -200,6 +200,7 @@ const NSDPTimeseriesSection: FC<TimeseriesSectionProps> = ({
                 value: chartData.callout,
               },
             ]}
+            beginZero={false} // Don't force y-axis to start at 0
           />
         ))}
       </div>
