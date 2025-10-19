@@ -1,17 +1,6 @@
-# datagovmy-front
+# opendosm-front
 
-Welcome to the official repository for Datagovmy, a comprehensive monorepo project meticulously crafted to enhance the development, management, and deployment of a suite of projects that power Malaysian government data initiatives.
-
-## About data.gov.my
-
-At Datagovmy, our mission is to transform data into actionable insights, and this monorepo is the central hub for displaying the our data. Our projects span a wide range of applications and packages, each playing a vital role in advancing data accessibility and utilization. Explore our projects below:
-
-#### Applications
-
-- [Datagovmy App](apps/app)
-- [OpenDOSM](apps/opendosm)
-- [KKMNow](apps/kkmnow)
-- [API Docs](apps/docs)
+Welcome to the official repository for OpenDOSM, a comprehensive monorepo project meticulously crafted to enhance the development, management, and deployment of a suite of projects that power DOSM's data initiatives.
 
 #### Packages
 
@@ -121,6 +110,6 @@ Thank you for creating them.
 
 ## License
 
-data.gov.my is licensed under [MIT](./LICENSE.md)
+open.dosm.gov.my is licensed under [MIT](./LICENSE.md)
 
-Copyright © 2023 Government of Malaysia
+Copyright © 2023 Department of Statistics Malaysia
