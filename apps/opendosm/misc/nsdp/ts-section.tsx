@@ -51,27 +51,50 @@ const NSDPTimeseriesSection: FC<TimeseriesSectionProps> = ({
     datum.data[data.index_type.value].x[datum.data[data.index_type.value].x.length - 1];
   const { coordinate } = useSlice(datum.data[data.index_type.value], data.minmax);
 
-  const configs = useCallback<(key: string) => { unit: string; callout: string; fill: boolean }>(
-    (key: string) => {
-      let unit = "";
-      let calloutPrefix = "";
-      let calloutValue = numFormat(
-        datum.data[data.index_type.value][key][datum.data[data.index_type.value][key].length - 1],
-        "standard",
-        [1, 1]
-      );
-  
-      if (/growth|perc/.test(data.index_type.value)) {
-        unit = "%";
-      } else if (data.index_type.value.includes("rm")) {
-        calloutPrefix = "RM";
-      }
-  
-      const callout = calloutPrefix + calloutValue + unit;
-  
+  const prefixRM = (value: number, usePositiveSign: boolean = false) =>
+    value > 0 ? (usePositiveSign ? "+RM" : "RM") : "-RM";
+
+  const valueFormatter = (value: number) => {
+    const standardValue = numFormat(value, "standard", [1, 1]);
+
+    if (/growth|perc/.test(data.index_type.value)) {
       return {
-        unit,
-        callout,
+        prefix: "",
+        unit: "%",
+        value: [standardValue, "%"].join(""),
+      };
+    } else if (data.index_type.value.includes("rm")) {
+      return {
+        prefix: "RM",
+        unit: "",
+        value: [
+          prefixRM(value),
+          numFormat(Math.abs(value), "compact", 1, "long", i18n.language, false),
+        ].join(""),
+      };
+    } else if (data.index_type.value.includes("abs")) {
+      return {
+        prefix: "",
+        unit: "",
+        value: [numFormat(Math.abs(value), "compact", 1, "long", i18n.language, false)].join(""),
+      };
+    } else {
+      return { prefix: "", unit: "", value: standardValue };
+    }
+  };
+
+  const configs = useCallback<
+    (key: string) => { prefix: string; unit: string; callout: string; fill: boolean }
+  >(
+    (key: string) => {
+      const format = valueFormatter(
+        datum.data[data.index_type.value][key][datum.data[data.index_type.value][key].length - 1]
+      );
+
+      return {
+        unit: format.unit,
+        callout: format.value,
+        prefix: format.prefix,
         fill: true,
       };
     },
@@ -82,6 +105,7 @@ const NSDPTimeseriesSection: FC<TimeseriesSectionProps> = ({
     sectionHeaders.map(chartName => ({
       title: t(`${baseTranslation}.keys.${chartName}`),
       unitY: configs(chartName).unit,
+      prefix: configs(chartName).prefix,
       label: t(`${baseTranslation}.keys.${chartName}`),
       data: coordinate[chartName],
       fill: configs(chartName).fill,
@@ -108,6 +132,30 @@ const NSDPTimeseriesSection: FC<TimeseriesSectionProps> = ({
             interval={datum.x_freq as Periods}
             enableAnimation={!play}
             unitY={configs("overall").unit}
+            prefixY={configs("overall").prefix !== "RM" ? configs("overall").prefix : ""}
+            {...(configs("overall").prefix === "RM"
+              ? {
+                  displayNumFormat: value =>
+                    [
+                      prefixRM(value, false),
+                      numFormat(Math.abs(value), "compact", 0, "long", i18n.language, true),
+                    ].join(""),
+                  tooltipCallback: item =>
+                    configs("overall").prefix === "RM" &&
+                    [
+                      item.dataset.label + ": ",
+                      prefixRM(item.parsed.y, false),
+                      numFormat(
+                        Math.abs(item.parsed.y),
+                        "compact",
+                        1,
+                        "long",
+                        i18n.language,
+                        false
+                      ),
+                    ].join(""),
+                }
+              : {})}
             axisY={{
               y2: {
                 display: false,
@@ -143,6 +191,7 @@ const NSDPTimeseriesSection: FC<TimeseriesSectionProps> = ({
                 value: configs("overall").callout,
               },
             ]}
+            beginZero={false}
           />
 
           <Slider
@@ -165,6 +214,30 @@ const NSDPTimeseriesSection: FC<TimeseriesSectionProps> = ({
             enableAnimation={!play}
             interval={datum.x_freq as Periods}
             unitY={chartData.unitY}
+            prefixY={chartData.prefix !== "RM" ? chartData.prefix : ""}
+            {...(chartData.prefix === "RM"
+              ? {
+                  displayNumFormat: value =>
+                    [
+                      prefixRM(value, false),
+                      numFormat(Math.abs(value), "compact", 0, "long", i18n.language, true),
+                    ].join(""),
+                  tooltipCallback: item =>
+                    chartData.prefix === "RM" &&
+                    [
+                      item.dataset.label + ": ",
+                      prefixRM(item.parsed.y, false),
+                      numFormat(
+                        Math.abs(item.parsed.y),
+                        "compact",
+                        1,
+                        "long",
+                        i18n.language,
+                        false
+                      ),
+                    ].join(""),
+                }
+              : {})}
             axisY={{
               y2: {
                 display: false,
