@@ -105,10 +105,8 @@ const NationalSummaryDataPageLayout: FunctionComponent<NationalSummaryDataPageLa
         category={[t("common:categories.summary"), getCategoryTextColor(tab_index)]}
         header={[t("header")]}
         description={[t("description")]}
-        // agencyBadge={<AgencyBadge agency="dosm" />}
       />
-
-      <nav className="sticky top-14 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center">
+      <nav className="sticky top-0 z-20 flex overflow-hidden border-b border-b-outline bg-white dark:border-b-washed-dark dark:bg-black min-[350px]:justify-center">
         <div className="hide-scrollbar max-[420px]:justify-center, flex snap-x snap-mandatory scroll-px-9 flex-nowrap overflow-x-auto max-sm:justify-start">
           {TAB_OPTIONS.map(tab => (
             <div key={tab.value} className="snap-start">

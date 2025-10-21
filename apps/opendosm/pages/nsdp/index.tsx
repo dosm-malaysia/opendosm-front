@@ -29,35 +29,37 @@ const NationalSummaryDataPage: Page = ({
   const { t, i18n } = useTranslation(["nsdp"]);
   return (
     <AnalyticsProvider meta={meta}>
-      <WindowProvider>
-        <Metadata
-          title={t("header")}
-          description={t("description_og")}
-          keywords={""}
-          image={`${process.env.NEXT_PUBLIC_API_S3_URL}/sdmx/og_${SHORT_LANG_ALT[i18n.language]}.png`}
-        />
-        <NationalSummaryDataPageLayout>
-          {(tab_index, chartColor) => (
-            <Container className="w-full flex divide-y-0">
-              <div className="flex-1">
+      <Metadata
+        title={t("header")}
+        description={t("description_og")}
+        keywords={""}
+        image={`${process.env.NEXT_PUBLIC_API_S3_URL}/sdmx/og_${SHORT_LANG_ALT[i18n.language]}.png`}
+      />
+      <NationalSummaryDataPageLayout>
+        {(tab_index, chartColor) => (
+          <Container className="w-full flex divide-y-0">
+            <div className="flex-1">
+              {
                 {
-                  {
-                    download: <NationalSummaryDataPageDownload download={download} />,
-                    real: <NSDPReal real={real} chartColor={chartColor} />,
-                    fiscal: <NSDPFiscal fiscal={fiscal} chartColor={chartColor} />,
-                    financial: <NSDPFinancial financial={financial} chartColor={chartColor} />,
-                    external: <NSDPExternal external={external} chartColor={chartColor} />,
-                    socio: <NSDPSocio socio={socio} chartColor={chartColor} />,
-                    // arc: <NSDPArc arc={real} chartColor={chartColor} />,
-                  }[tab_index]
-                }
-              </div>
-            </Container>
-          )}
-        </NationalSummaryDataPageLayout>
-      </WindowProvider>
+                  download: <NationalSummaryDataPageDownload download={download} />,
+                  real: <NSDPReal real={real} chartColor={chartColor} />,
+                  fiscal: <NSDPFiscal fiscal={fiscal} chartColor={chartColor} />,
+                  financial: <NSDPFinancial financial={financial} chartColor={chartColor} />,
+                  external: <NSDPExternal external={external} chartColor={chartColor} />,
+                  socio: <NSDPSocio socio={socio} chartColor={chartColor} />,
+                  // arc: <NSDPArc arc={real} chartColor={chartColor} />,
+                }[tab_index]
+              }
+            </div>
+          </Container>
+        )}
+      </NationalSummaryDataPageLayout>
     </AnalyticsProvider>
   );
+};
+
+NationalSummaryDataPage.layout = (page, props) => {
+  return <WindowProvider>{page}</WindowProvider>;
 };
 
 export const getStaticProps: GetStaticProps = withi18n("nsdp", async ({ locale }) => {
