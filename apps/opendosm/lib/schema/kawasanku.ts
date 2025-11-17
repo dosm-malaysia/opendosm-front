@@ -1,5 +1,6 @@
 import { OptionType } from "datagovmy-ui/types";
 import { numFormat } from "datagovmy-ui/helpers";
+import { i18n } from "i18next";
 
 export const STATES: Array<OptionType> = (() => {
   return [
@@ -1101,14 +1102,14 @@ export const jitterTooltipFormats: any = {
   labour_urate: (value: number) => numFormat(value, "compact", 1) + "%",
   labour_prate: (value: number) => numFormat(value, "compact", 1) + "%",
   agegroup_working: (value: number) => numFormat(value, "compact", 1) + "%",
-  total_area: (value: number) => `${numFormat(value, "standard", 0)} km^2`,
+  total_area: (value: number) => `${numFormat(value, "standard", 0)} km\u00B2`,
   max_elevation: (value: number) => `${numFormat(value, "standard", 0)} m`,
   ruggedness: (_value: number) => "",
   watercover: (_value: number) => "",
   treecover: (_value: number) => "",
   treeloss: (_value: number) => "",
   nightlights: (_value: number) => "",
-  population_density: (value: number) => numFormat(value, "standard", 0) + " /km^2",
+  population_density: (value: number) => numFormat(value, "standard", 0) + " per km\u00B2",
   female_male: (value: number) => numFormat(value, "compact", 1),
   household_size: (value: number) => numFormat(value, "compact", 1),
   birth_rate: (value: number) => numFormat(value, "compact", 1),
@@ -1122,4 +1123,13 @@ export const jitterTooltipFormats: any = {
   school: (value: number) => numFormat(value, "compact", 1),
   police_fire: (value: number) => numFormat(value, "compact", 1),
   grocery: (value: number) => numFormat(value, "compact", 1),
+  atm: (value: number) => numFormat(value, "compact", 1),
+  petrol: (value: number) => numFormat(value, "compact", 1),
+  libraries: (value: number) => numFormat(value, "compact", 1),
+  worship: (value: number) => numFormat(value, "compact", 1),
+  voters_total: (value: number) => numFormat(value, "standard", 0),
+  voter_density: (value: number) => numFormat(value, "standard", 0) + " per km\u00B2",
+  constituency_size: (value: number, i18n: i18n) =>
+    numFormat(value, "compact", 0) + (i18n.language === "en-GB" ? "% of avg" : "% drpd purata"),
+  voter_turnout: (value: number) => numFormat(value, "compact", 1) + "%",
 };

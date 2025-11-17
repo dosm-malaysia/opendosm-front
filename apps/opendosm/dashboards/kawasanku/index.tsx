@@ -105,7 +105,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
   geojson,
   choropleth,
 }) => {
-  const { t } = useTranslation(["dashboard-kawasanku", "common"]);
+  const { t, i18n } = useTranslation(["dashboard-kawasanku", "common"]);
   const router = useRouter();
 
   const AREA_TYPES = [
@@ -324,7 +324,15 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
             )}
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:col-span-3 lg:grid-cols-3 lg:gap-12">
-              {Object.entries(bar.data).map(([key, data]) => (
+              {Object.entries(
+                params.geofilter === "state" || params.geofilter === "district"
+                  ? bar.data
+                  : Object.fromEntries(
+                      ["sex", "ethnicity", "agegroup", "nationality", "housing", "labour"]
+                        .filter(key => key in bar.data)
+                        .map(k => [k, bar.data[k]])
+                    )
+              ).map(([key, data]) => (
                 <BarMeter
                   key={key}
                   title={t(`${key}`)}
@@ -359,7 +367,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
         {/* A comparison of key variables across {{ type }} */}
         <Section
           title={t("section_2.title", {
-            type: t(`area_types.${data.geofilter?.value ?? "state"}s`),
+            type: t(`area_types.${params.geofilter ?? "state"}s`),
           })}
           date={"MyCensus 2020"}
         >
@@ -421,7 +429,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
                     <Tooltip tip={t(`tips.${key}`)} />
                   </div>
                 )}
-                formatTooltip={(key, value) => jitterTooltipFormats[key](value) ?? value}
+                formatTooltip={(key, value) => jitterTooltipFormats[key](value, i18n) ?? value}
               />
             ))}
           </div>
