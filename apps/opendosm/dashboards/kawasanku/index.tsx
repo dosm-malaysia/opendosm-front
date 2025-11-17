@@ -288,10 +288,12 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
           <div
             className={clx(
               "grid gap-12",
-              params.geofilter === "state" ? "grid-cols-1 xl:grid-cols-5" : ""
+              params.geofilter === "state" || params.geofilter === "district"
+                ? "grid-cols-1 xl:grid-cols-5"
+                : ""
             )}
           >
-            {params.geofilter === "state" && pyramid && (
+            {(params.geofilter === "state" || params.geofilter === "district") && pyramid && (
               <div className="col-span-1 w-full lg:col-span-2">
                 <Pyramid
                   data={{
@@ -400,7 +402,13 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
                 t("above_median"),
               ]}
             />
-            {Object.entries(jitterplot.data).map(([key, dataset]) => (
+            {Object.entries(
+              Object.fromEntries(
+                ["population", "voting", "geography", "economy", "public_services"]
+                  .filter(key => key in jitterplot.data)
+                  .map(k => [k, jitterplot.data[k]])
+              )
+            ).map(([key, dataset]) => (
               <Jitterplot
                 key={key}
                 title={t(`${key}`)}
