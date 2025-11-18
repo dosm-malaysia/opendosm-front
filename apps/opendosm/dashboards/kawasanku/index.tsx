@@ -215,7 +215,9 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
                   name === "expenditure" ||
                   name === "poverty"
                   ? 1
-                  : 0,
+                  : name === "inequality"
+                    ? 3
+                    : 0,
                 name === "income" || name === "expenditure" ? "long" : "short",
                 i18n.language,
                 false
@@ -303,7 +305,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
   const indicator_unit = useMemo<string>(() => {
     if (["treecover", "water", "poverty", "electricity"].includes(data.indicator_type)) return "%";
     if (data.indicator_type === "max_elevation") return "m";
-    if (data.indicator_type === "population_density") return "/km^2";
+    if (data.indicator_type === "population_density") return "/km\u00B2";
     return "";
   }, [data.indicator_type]);
 
@@ -407,7 +409,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
             area: data.area ?? params.state,
             size: numFormat(population_callout.total, "standard"),
           })}
-          date={"MyCensus 2020"}
+          date={bar.data_as_of}
         >
           <div
             className={clx(
@@ -530,7 +532,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
           title={t("section_2.title", {
             type: t(`area_types.${params.geofilter ?? "state"}s`),
           })}
-          date={"MyCensus 2020"}
+          date={jitterplot.data_as_of}
         >
           <div className="flex w-full flex-wrap gap-2 pb-12 lg:flex-row lg:pb-8">
             <Dropdown
@@ -624,6 +626,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
                   }}
                   color={indicator_colors}
                   type={type.value as "parlimen" | "dun"}
+                  precision={data.indicator_type === "gini" ? 3 : undefined}
                 />
               </Panel>
             ))}
