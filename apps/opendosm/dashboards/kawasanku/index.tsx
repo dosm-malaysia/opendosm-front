@@ -196,7 +196,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
         stats: [
           {
             title: t("common:common.latest", {
-              date: toDate(LATEST_TIMESTAMP, "MMM yyyy", i18n.language),
+              date: toDate(LATEST_TIMESTAMP, "yyyy", i18n.language),
             }),
             value: [
               name === "income" || name === "expenditure" ? "RM" : "",
