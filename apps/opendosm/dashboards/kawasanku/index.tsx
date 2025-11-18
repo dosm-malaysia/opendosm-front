@@ -192,7 +192,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
         data: coordinate[name],
         fill: true,
         prefix: name === "income" || name === "expenditure" ? "RM" : "",
-        unitY: name === "u_rate" || name === "p_rate" ? "%" : ``,
+        unitY: name === "u_rate" || name === "p_rate" || name === "poverty" ? "%" : ``,
         stats: [
           {
             title: t("common:common.latest", {
@@ -205,20 +205,22 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
                 name === "u_rate" ||
                   name === "p_rate" ||
                   name === "income" ||
-                  name === "expenditure"
+                  name === "expenditure" ||
+                  name === "poverty"
                   ? "compact"
                   : "standard",
                 name === "u_rate" ||
                   name === "p_rate" ||
                   name === "income" ||
-                  name === "expenditure"
+                  name === "expenditure" ||
+                  name === "poverty"
                   ? 1
                   : 0,
                 name === "income" || name === "expenditure" ? "long" : "short",
                 i18n.language,
                 false
               ),
-              name === "u_rate" || name === "p_rate" ? "%" : ``,
+              name === "u_rate" || name === "p_rate" || name === "poverty" ? "%" : ``,
             ].join(""),
           },
         ],
@@ -228,7 +230,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
         <Timeseries
           key={title}
           title={title}
-          className="h-[350px] w-full"
+          className="h-[300px] w-full"
           interval="year"
           enableAnimation={!play}
           prefixY={prefix}
@@ -253,8 +255,8 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
                 type: "line",
                 label: label,
                 data: datum,
-                backgroundColor: AKSARA_COLOR.BLACK_H,
-                borderColor: AKSARA_COLOR.BLACK,
+                backgroundColor: AKSARA_COLOR.PRIMARY_H,
+                borderColor: AKSARA_COLOR.PRIMARY,
                 fill: fill,
                 borderWidth: 1.5,
               },
