@@ -1,7 +1,7 @@
 import { BarMeterData } from "datagovmy-ui/charts/bar-meter";
 import { JitterData } from "datagovmy-ui/charts/jitterplot";
 import { OptionType, WithData } from "datagovmy-ui/types";
-import { Color } from "datagovmy-ui/hooks";
+import { Color, useSlice } from "datagovmy-ui/hooks";
 import { GeoJsonObject } from "geojson";
 import { FunctionComponent, useEffect, useMemo } from "react";
 import {
@@ -12,6 +12,7 @@ import {
   Hero,
   Panel,
   Section,
+  Slider,
   Spinner,
   Tabs,
   Tooltip,
@@ -21,10 +22,11 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import dynamic from "next/dynamic";
 import { useData, useTranslation } from "datagovmy-ui/hooks";
 import { AKSARA_COLOR } from "datagovmy-ui/constants";
-import { clx, numFormat } from "datagovmy-ui/helpers";
+import { clx, numFormat, toDate } from "datagovmy-ui/helpers";
 import { routes } from "@lib/routes";
 import { DISTRICTS, DUNS, PARLIMENS, STATES, jitterTooltipFormats } from "@lib/schema/kawasanku";
 import { useRouter } from "next/router";
+import { SliderProvider } from "datagovmy-ui/contexts/slider";
 
 /**
  * Kawasanku Dashboard
@@ -40,6 +42,17 @@ const MapPlot = dynamic(() => import("datagovmy-ui/charts/map-plot"), { ssr: fal
 const BarMeter = dynamic(() => import("datagovmy-ui/charts/bar-meter"), {
   ssr: false,
 });
+const Timeseries = dynamic(() => import("datagovmy-ui/charts/timeseries"), { ssr: false });
+
+interface TimeseriesChartData {
+  title: string;
+  label: string;
+  data: number[];
+  fill: boolean;
+  stats: Array<{ title: string; value: string }>;
+  prefix: string;
+  unitY: string;
+}
 
 interface KawasankuDashboardProps {
   last_updated: string;
@@ -52,6 +65,7 @@ interface KawasankuDashboardProps {
   bar: any;
   jitterplot: any;
   jitterplot_options: Array<OptionType>;
+  timeseries: WithData<Record<TimeseriesData, number[]>>;
   choropleth?: WithData<{
     dun: {
       x: string[];
@@ -92,6 +106,18 @@ interface KawasankuDashboardProps {
   geojson?: GeoJsonObject;
 }
 
+type TimeseriesData =
+  | "x"
+  | "population"
+  | "births"
+  | "deaths"
+  | "income"
+  | "expenditure"
+  | "poverty"
+  | "inequality"
+  | "u_rate"
+  | "p_rate";
+
 type AreaType = "district" | "dun" | "parlimen" | "state";
 
 const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
@@ -99,6 +125,7 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
   params,
   bar,
   pyramid,
+  timeseries,
   jitterplot,
   jitterplot_options,
   population_callout,
@@ -142,7 +169,102 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
     comparator: [],
     indicator_type: INDICATOR_OPTIONS[0].value,
     indicator_index: 0,
+    minmax: [0, timeseries.data.x.length - 1],
   });
+
+  const LATEST_TIMESTAMP = timeseries.data.x[timeseries.data.x.length - 1];
+
+  const { coordinate } = useSlice(timeseries.data, data.minmax);
+
+  const plotTimeseries = (charts: Exclude<TimeseriesData, "x" | "recession">[], play: boolean) => {
+    return charts.map(name => {
+      const {
+        title,
+        label,
+        data: datum,
+        fill,
+        stats,
+        prefix,
+        unitY,
+      }: TimeseriesChartData = {
+        title: t(`keys.${name}`),
+        label: t(`keys.${name}`),
+        data: coordinate[name],
+        fill: true,
+        prefix: name === "income" || name === "expenditure" ? "RM" : "",
+        unitY: name === "u_rate" || name === "p_rate" ? "%" : ``,
+        stats: [
+          {
+            title: t("common:common.latest", {
+              date: toDate(LATEST_TIMESTAMP, "MMM yyyy", i18n.language),
+            }),
+            value: [
+              name === "income" || name === "expenditure" ? "RM" : "",
+              numFormat(
+                Math.abs(timeseries.data[name][timeseries.data[name].length - 1]),
+                name === "u_rate" ||
+                  name === "p_rate" ||
+                  name === "income" ||
+                  name === "expenditure"
+                  ? "compact"
+                  : "standard",
+                name === "u_rate" ||
+                  name === "p_rate" ||
+                  name === "income" ||
+                  name === "expenditure"
+                  ? 1
+                  : 0,
+                name === "income" || name === "expenditure" ? "long" : "short",
+                i18n.language,
+                false
+              ),
+              name === "u_rate" || name === "p_rate" ? "%" : ``,
+            ].join(""),
+          },
+        ],
+      };
+
+      return (
+        <Timeseries
+          key={title}
+          title={title}
+          className="h-[350px] w-full"
+          interval="year"
+          enableAnimation={!play}
+          prefixY={prefix}
+          unitY={unitY}
+          axisY={{
+            y2: {
+              display: false,
+              grid: {
+                drawTicks: false,
+                drawBorder: false,
+                lineWidth: 0.5,
+              },
+              ticks: {
+                display: false,
+              },
+            },
+          }}
+          data={{
+            labels: coordinate.x,
+            datasets: [
+              {
+                type: "line",
+                label: label,
+                data: datum,
+                backgroundColor: AKSARA_COLOR.BLACK_H,
+                borderColor: AKSARA_COLOR.BLACK,
+                fill: fill,
+                borderWidth: 1.5,
+              },
+            ],
+          }}
+          stats={stats}
+        />
+      );
+    });
+  };
 
   const availableAreaTypes = useMemo(() => {
     if (["W.P. Kuala Lumpur", "W.P. Putrajaya", "W.P. Labuan"].includes(params.state)) {
@@ -362,6 +484,43 @@ const KawasankuDashboard: FunctionComponent<KawasankuDashboardProps> = ({
               ))}
             </div>
           </div>
+        </Section>
+
+        <Section
+          title={t("section_4.title", {
+            area: data.area ?? params.state,
+          })}
+          date={timeseries.data_as_of}
+        >
+          <SliderProvider>
+            {play => (
+              <>
+                <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+                  {plotTimeseries(
+                    [
+                      "population",
+                      "births",
+                      "deaths",
+                      "income",
+                      "expenditure",
+                      "poverty",
+                      "inequality",
+                      "u_rate",
+                      "p_rate",
+                    ],
+                    play
+                  )}
+                </div>
+                <Slider
+                  type="range"
+                  period={"year"}
+                  value={data.minmax}
+                  onChange={e => setData("minmax", e)}
+                  data={timeseries.data.x}
+                />
+              </>
+            )}
+          </SliderProvider>
         </Section>
 
         {/* A comparison of key variables across {{ type }} */}

@@ -22,6 +22,7 @@ const KawasankuDun: Page = ({
   pyramid,
   choropleth,
   population_callout,
+  timeseries,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["dashboard-kawasanku"]);
 
@@ -38,6 +39,7 @@ const KawasankuDun: Page = ({
         bar={bar}
         jitterplot={jitterplot}
         pyramid={pyramid}
+        timeseries={timeseries}
         jitterplot_options={jitterplot_options}
         population_callout={population_callout}
         geojson={geojson}
@@ -97,6 +99,7 @@ export const getStaticProps: GetStaticProps = withi18n(
         bar: data.bar_chart,
         jitterplot: data.jitter_chart,
         pyramid: data.pyramid_data,
+        timeseries: data.timeseries,
         jitterplot_options: options,
         population_callout: {
           total: data.bar_chart_callout.data.tooltip.find(({ x }: { x: string }) => x === "total")

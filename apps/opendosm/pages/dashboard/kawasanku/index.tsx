@@ -18,6 +18,7 @@ const KawasankuIndex: Page = ({
   jitterplot,
   pyramid,
   choropleth,
+  timeseries,
   population_callout,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["dashboard-kawasanku"]);
@@ -32,6 +33,7 @@ const KawasankuIndex: Page = ({
         jitterplot={jitterplot}
         pyramid={pyramid}
         choropleth={choropleth}
+        timeseries={timeseries}
         population_callout={population_callout}
         jitterplot_options={STATES.filter(item => item.value !== "malaysia")}
         geojson={MalaysiaGeojson as GeoJsonObject}
@@ -69,6 +71,7 @@ export const getStaticProps: GetStaticProps = withi18n("dashboard-kawasanku", as
       },
       jitterplot: data.jitter_chart,
       pyramid: data.pyramid_data,
+      timeseries: data.timeseries,
       choropleth: {
         data_as_of: data.choropleth_parlimen.data_as_of,
         data: {
