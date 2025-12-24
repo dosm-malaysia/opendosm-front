@@ -33,7 +33,7 @@ const ExternalTrade: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-external-trade", async ({}) => {
-  const { data } = await get("/dashboard", { dashboard: "trade" });
+  const { data } = await get("/dashboards/trade.json", {}, "api_s3");
 
   return {
     props: {

@@ -29,7 +29,7 @@ const InternationalInvestmentPosition: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-iip", async () => {
-  const { data } = await get("/dashboard", { dashboard: "iip" });
+  const { data } = await get("/dashboards/iip.json", {}, "api_s3");
 
   return {
     notFound: false,

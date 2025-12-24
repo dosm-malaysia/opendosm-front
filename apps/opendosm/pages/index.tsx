@@ -407,7 +407,7 @@ const Ranking = ({ ranks }: RankingProps) => {
 };
 
 export const getStaticProps: GetStaticProps = withi18n("opendosm-home", async () => {
-  const { data } = await get("/dashboard/", { dashboard: "opendosm_homepage" });
+  const { data } = await get("/dashboards/home.json", {}, "api_s3");
 
   return {
     props: {

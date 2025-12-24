@@ -27,6 +27,7 @@ type Dashboard = {
   agency: Division;
   name: string;
   route: string;
+  theme_order: number;
 };
 
 type View = {
@@ -60,7 +61,7 @@ const DashboardIndex: FunctionComponent<DashboardIndexProps> = ({ dashboards }) 
   const tabs_data = useMemo<
     Record<"thematic" | "most_popular" | "recent_updated", Dashboard[]>
   >(() => {
-    const thematic = _collection;
+    const thematic = [..._collection].sort((a, b) => a.theme_order - b.theme_order);
 
     const recent_updated = [..._collection].sort(
       (a, b) =>
@@ -211,6 +212,7 @@ const Ranking = ({ ranks, views, tabs }: RankingProps) => {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {ranks.map((item, i) => (
           <At
+            key={item.route}
             href={item.route}
             locale={i18n.language}
             prefetch={false}

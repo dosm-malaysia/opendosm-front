@@ -61,9 +61,7 @@ const DigitalEconomy: Page = ({
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-digital-economy", async () => {
   try {
-    const { data } = await get("/dashboard", {
-      dashboard: "digital_economy",
-    });
+    const { data } = await get("/dashboards/digital_economy.json", {}, "api_s3");
 
     return {
       props: {

@@ -30,7 +30,7 @@ const ProducerPrices: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-producer-prices", async () => {
-  const { data } = await get("/dashboard", { dashboard: "producer_price_index" });
+  const { data } = await get("/dashboards/ppi.json", {}, "api_s3");
 
   return {
     props: {

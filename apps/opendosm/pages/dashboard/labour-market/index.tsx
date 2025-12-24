@@ -34,7 +34,7 @@ const Labour: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-labour-market", async () => {
-  const { data } = await get("/dashboard", { dashboard: "labour" });
+  const { data } = await get("/dashboards/lfs.json", {}, "api_s3");
 
   return {
     props: {

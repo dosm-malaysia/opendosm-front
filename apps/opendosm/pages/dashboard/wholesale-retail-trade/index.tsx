@@ -30,7 +30,7 @@ const WholesaleRetail: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-wholesale-retail", async () => {
-  const { data } = await get("/dashboard", { dashboard: "wholesale_retail_trade" });
+  const { data } = await get("/dashboards/iowrt.json", {}, "api_s3");
 
   return {
     props: {

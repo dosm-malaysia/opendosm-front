@@ -31,7 +31,7 @@ const IndustrialProduction = ({
 export const getStaticProps: GetStaticProps = withi18n(
   "dashboard-industrial-production",
   async () => {
-    const { data } = await get("/dashboard", { dashboard: "industrial_production" });
+    const { data } = await get("/dashboards/ipi.json", {}, "api_s3");
 
     return {
       props: {

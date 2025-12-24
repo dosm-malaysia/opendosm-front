@@ -31,7 +31,7 @@ const ServicesProducerPrices: Page = ({
 export const getStaticProps: GetStaticProps = withi18n(
   "dashboard-services-producer-prices",
   async () => {
-    const { data } = await get("/dashboard", { dashboard: "services_ppi" });
+    const { data } = await get("/dashboards/sppi.json", {}, "api_s3");
 
     return {
       notFound: false,

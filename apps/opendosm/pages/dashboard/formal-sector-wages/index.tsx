@@ -35,7 +35,7 @@ const FormalSectorWages: Page = ({
 export const getStaticProps: GetStaticProps = withi18n(
   "dashboard-formal-sector-wages",
   async () => {
-    const { data } = await get("/dashboard", { dashboard: "formal_wages" });
+    const { data } = await get("/dashboards/formal_wages.json", {}, "api_s3");
 
     return {
       notFound: false,

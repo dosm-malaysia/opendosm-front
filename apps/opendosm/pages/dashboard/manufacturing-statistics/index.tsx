@@ -31,7 +31,7 @@ const ManufacturingStatistics: Page = ({
 export const getStaticProps: GetStaticProps = withi18n(
   "dashboard-manufacturing-statistics",
   async () => {
-    const { data } = await get("/dashboard", { dashboard: "manufacturing_statistics" });
+    const { data } = await get("/dashboards/manufacturing.json", {}, "api_s3");
 
     return {
       notFound: false,

@@ -29,7 +29,7 @@ const GDP = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-gdp", async () => {
-  const { data } = await get("/dashboard", { dashboard: "gdp" });
+  const { data } = await get("/dashboards/gdp.json", {}, "api_s3");
 
   return {
     props: {
@@ -44,7 +44,6 @@ export const getStaticProps: GetStaticProps = withi18n("dashboard-gdp", async ()
       timeseries: data.timeseries,
       timeseries_callouts: data.statistics,
     },
-    revalidate: 60 * 60 * 24, // 1 day (in seconds)
   };
 });
 

@@ -44,7 +44,7 @@ const BalanceOfPayments: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-bop", async () => {
-  const { data } = await get("/dashboard", { dashboard: "bop" });
+  const { data } = await get("/dashboards/bop.json", {}, "api_s3");
 
   return {
     notFound: false,

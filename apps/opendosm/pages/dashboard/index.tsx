@@ -28,7 +28,7 @@ export const getStaticProps: GetStaticProps = withi18n(
   ["dashboards", "opendosm-home"],
   async () => {
     try {
-      const { data } = await get("/dashboard", { dashboard: "dashboards2", site: "opendosm" });
+      const { data } = await get("/dashboards/index.json", {}, "api_s3");
 
       return {
         props: {

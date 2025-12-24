@@ -31,7 +31,7 @@ const LabourProductivity: Page = ({
 export const getStaticProps: GetStaticProps = withi18n(
   "dashboard-labour-productivity",
   async () => {
-    const { data } = await get("/dashboard", { dashboard: "labour_productivity" });
+    const { data } = await get("/dashboards/labour_productivity.json", {}, "api_s3");
 
     return {
       notFound: false,

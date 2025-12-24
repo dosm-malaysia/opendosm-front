@@ -30,7 +30,7 @@ const CompositeIndices: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-composite-index", async () => {
-  const { data } = await get("/dashboard", { dashboard: "composite_indices" });
+  const { data } = await get("/dashboards/mei.json", {}, "api_s3");
 
   return {
     props: {

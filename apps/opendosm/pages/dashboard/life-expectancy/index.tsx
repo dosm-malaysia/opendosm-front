@@ -35,7 +35,7 @@ const LifeExpectancy: Page = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-life-expectancy", async () => {
-  const { data } = await get("/dashboard", { dashboard: "lifetables" });
+  const { data } = await get("/dashboards/life_expectancy.json", {}, "api_s3");
 
   return {
     notFound: false,

@@ -36,7 +36,7 @@ const ConstructionStatistics: Page = ({
 export const getStaticProps: GetStaticProps = withi18n(
   "dashboard-construction-statistics",
   async () => {
-    const { data } = await get("/dashboard", { dashboard: "construction" });
+    const { data } = await get("/dashboards/construction.json", {}, "api_s3");
 
     return {
       props: {

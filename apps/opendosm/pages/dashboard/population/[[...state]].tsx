@@ -78,7 +78,7 @@ export const getStaticProps: GetStaticProps = withi18n(
   "dashboard-population",
   async ({ params }) => {
     const state = params?.state ? params.state[0] : "mys";
-    const { data } = await get("/dashboard", { dashboard: "population", state: state });
+    const { data } = await get(`/dashboards/population/${state}.json`, {}, "api_s3");
 
     return {
       props: {

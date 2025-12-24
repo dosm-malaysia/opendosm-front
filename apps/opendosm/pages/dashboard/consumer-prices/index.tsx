@@ -33,7 +33,7 @@ const ConsumerPrices = ({
 };
 
 export const getStaticProps: GetStaticProps = withi18n("dashboard-consumer-prices", async () => {
-  const { data } = await get("/dashboard", { dashboard: "consumer_price_index" });
+  const { data } = await get("/dashboards/cpi.json", {}, "api_s3");
 
   return {
     props: {
