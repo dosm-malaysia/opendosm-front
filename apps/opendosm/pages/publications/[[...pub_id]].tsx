@@ -8,7 +8,7 @@ import { Page } from "datagovmy-ui/types";
 import BrowsePublicationsDashboard from "misc/publications/browse";
 import { Publication } from "datagovmy-ui/components";
 import PublicationsLayout from "misc/publications/layout";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, GetStaticPaths, InferGetStaticPropsType } from "next";
 import { AxiosResponse } from "axios";
 
 const BrowsePublications: Page = ({
@@ -16,9 +16,8 @@ const BrowsePublications: Page = ({
   pub,
   publications,
   params,
-  query,
   total_pubs,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["publications", "common"]);
 
   return (
@@ -34,7 +33,6 @@ const BrowsePublications: Page = ({
             pub={pub}
             publications={publications}
             params={params}
-            query={query}
             total_pubs={total_pubs}
           />
         </WindowProvider>
@@ -43,16 +41,23 @@ const BrowsePublications: Page = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = withi18n(
+export const getStaticPaths: GetStaticPaths = () => {
+  return {
+    paths: [],
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps: GetStaticProps = withi18n(
   ["publications", "catalogue"],
-  async ({ locale, query, params }) => {
+  async ({ locale, params }) => {
     try {
       const pub_id = params.pub_id ? params.pub_id[0] : "";
       const [{ data }, response] = await Promise.all([
         get("/publication/", {
           language: locale,
-          ...query,
         }),
+        // TODO: this will be fetched on client
         fetch(`${process.env.NEXT_PUBLIC_TINYBIRD_URL}/pipes/publication_dls_by_pub_res.json`, {
           method: "GET",
           headers: {
@@ -64,7 +69,7 @@ export const getServerSideProps: GetServerSideProps = withi18n(
         throw new Error("Invalid filter. Message: " + e);
       });
 
-      const { meta, data: total_downloads } = await response.json();
+      const { data: total_downloads } = await response.json();
 
       const pub: AxiosResponse<PubResource> | null = pub_id
         ? await get(`/publication-resource/${pub_id}`, {
@@ -108,16 +113,12 @@ export const getServerSideProps: GetServerSideProps = withi18n(
                   Date.parse(b.release_date) - Date.parse(a.release_date)
               ) ?? [],
           params: { pub_id },
-          query: query ?? {},
           total_pubs: data.count,
         },
       };
     } catch (e: any) {
       return { notFound: true };
     }
-  },
-  {
-    cache_expiry: 600, // 10 min
   }
 );
 

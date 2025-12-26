@@ -20,11 +20,10 @@ import {
   Panel,
   Radio,
   Section,
-  Spinner,
   Tabs,
 } from "datagovmy-ui/components";
 import { toDate } from "datagovmy-ui/helpers";
-import { useCache, useData, useFilter, useTranslation } from "datagovmy-ui/hooks";
+import { useCache, useData, useTranslation } from "datagovmy-ui/hooks";
 import { OptionType } from "datagovmy-ui/types";
 import { matchSorter } from "match-sorter";
 import dynamic from "next/dynamic";
@@ -34,6 +33,7 @@ import { DateTime } from "luxon";
 import { WindowContext } from "datagovmy-ui/contexts/window";
 import { BREAKPOINTS } from "datagovmy-ui/constants";
 import { AnalyticsContext } from "datagovmy-ui/contexts/analytics";
+import { ParsedUrlQuery } from "querystring";
 
 /**
  * Publications
@@ -44,11 +44,26 @@ const Table = dynamic(() => import("datagovmy-ui/charts/table"), {
   ssr: false,
 });
 
+interface PublicationQueryParams extends ParsedUrlQuery {
+  demography: string;
+  frequency: string;
+  geography: string;
+  page: string;
+  search: string;
+}
+
+const DEFAULTS = {
+  search: "" as string,
+  page: "1" as string,
+  frequency: "",
+  demography: [] as OptionType[],
+  geography: [] as OptionType[],
+} as const;
+
 interface BrowsePublicationsProps {
   params: any;
   pub: PubResource | null;
   publications: Publication[];
-  query: any;
   total_pubs: number;
 }
 
@@ -56,22 +71,22 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
   params,
   pub,
   publications,
-  query,
   total_pubs,
 }) => {
   const { send_new_analytics } = useContext(AnalyticsContext);
   const { t, i18n } = useTranslation(["publications", "catalogue", "common"]);
   const { cache } = useCache();
   const { size } = useContext(WindowContext);
-  const { push, events } = useRouter();
+  const { push, events, query: _query, replace, ...router } = useRouter();
   const [show, setShow] = useState<boolean>(false);
   const ITEMS_PER_PAGE = 15;
   const { data, setData } = useData({
-    loading: false,
     modal_loading: false,
     pub: pub,
     tab: 0,
   });
+
+  const query = _query as PublicationQueryParams;
 
   const filteredRes = useMemo(
     () => matchSorter(data.pub ? data.pub.resources : [], data.query, { keys: ["resource_name"] }),
@@ -101,19 +116,54 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
     { label: t("catalogue:filter_options.marital"), value: "MARITAL" },
   ];
 
-  const { filter, setFilter, actives, queries } = useFilter({
-    demography: query.demography
-      ? demographies.filter(item => query.demography.split(",").includes(item.value))
-      : [],
-    frequency: query.frequency
-      ? frequencies.find(item => item.value === query.frequency)
-      : undefined,
-    geography: query.geography
-      ? geographies.filter(item => query.geography.split(",").includes(item.value))
-      : [],
-    page: query.page ?? "1",
-    search: query.search ?? "",
-  });
+  const queryState = useMemo(() => {
+    if (!router.isReady) return null;
+
+    return {
+      search: query.search ?? DEFAULTS.search,
+      page: query.page ?? DEFAULTS.page,
+      frequency: query.frequency
+        ? frequencies.find(item => item.value === query.frequency)
+        : undefined,
+      demography: query.demography
+        ? demographies.filter(item => query.demography.split(",").includes(item.value))
+        : DEFAULTS.demography,
+      geography: query.geography
+        ? geographies.filter(item => query.geography.split(",").includes(item.value))
+        : DEFAULTS.geography,
+    };
+  }, [router.isReady, _query]);
+
+  const updateQuery = (updates?: Record<string, any>) => {
+    const nextQuery = updates ? { ...query, ...updates } : {};
+
+    Object.keys(nextQuery).forEach(key => {
+      if (nextQuery[key] === undefined || nextQuery[key] === null || nextQuery[key] === "") {
+        delete nextQuery[key];
+      }
+    });
+
+    replace(
+      {
+        pathname: router.pathname,
+        query: nextQuery,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const actives: Array<[string, unknown]> = useMemo(
+    () =>
+      Object.entries(data).filter(
+        ([_, value]) =>
+          value !== undefined &&
+          value !== null &&
+          (value as Array<any>).length !== 0 &&
+          value !== ""
+      ),
+    [queryState]
+  );
 
   useEffect(() => {
     show ? (document.body.style.overflow = "hidden") : (document.body.style.overflow = "unset");
@@ -136,11 +186,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
   }, [size.width]);
 
   const reset = () => {
-    setFilter("demography", []);
-    setFilter("frequency", undefined);
-    setFilter("geography", []);
-    setFilter("page", "1");
-    setFilter("search", "");
+    updateQuery();
   };
 
   const pubConfig: TableConfig<Publication>[] = [
@@ -157,11 +203,10 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             onClick={() => {
               setShow(true);
               push(
-                routes.PUBLICATIONS.concat(
-                  "/",
-                  row.original.publication_id,
-                  actives.length ? queries : ""
-                ),
+                {
+                  pathname: `${routes.PUBLICATIONS}/${row.original.publication_id}`,
+                  query: query,
+                },
                 routes.PUBLICATIONS.concat("/", row.original.publication_id),
                 {
                   scroll: false,
@@ -199,12 +244,10 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
       setData("tab", cache.get("tab"));
     }
     events.on("routeChangeComplete", () => {
-      setData("loading", false);
       setData("modal_loading", false);
     });
     return () => {
       events.off("routeChangeComplete", () => {
-        setData("loading", false);
         setData("modal_loading", false);
       });
     };
@@ -245,6 +288,8 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
     }
   };
 
+  if (!queryState) return null;
+
   return (
     <Container>
       <Section>
@@ -253,11 +298,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
           <Input
             className="w-full truncate border-none bg-white py-3 pl-12 pr-10 text-base focus:outline-none focus:ring-0 dark:bg-black hover:dark:bg-washed-dark/50 focus:dark:bg-washed-dark"
             placeholder={t("search_publication")}
-            value={filter.search}
+            value={queryState.search}
             onChange={e => {
-              setFilter("page", "1");
-              setFilter("search", e);
-              setData("loading", true);
+              updateQuery({ page: "1", search: e });
             }}
           />
           <span className="absolute left-4 top-3.5">
@@ -286,11 +329,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                     name="frequency"
                     label={t("catalogue:frequency")}
                     options={frequencies}
-                    value={filter.frequency}
+                    value={queryState.frequency}
                     onChange={e => {
-                      setData("loading", true);
-                      setFilter("frequency", e);
-                      setFilter("page", "1");
+                      updateQuery({ page: "1", frequency: e.value });
                     }}
                   />
                 </div>
@@ -299,11 +340,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                     name="geography"
                     label={t("catalogue:geography")}
                     options={geographies}
-                    value={filter.geography}
+                    value={queryState.geography}
                     onChange={e => {
-                      setData("loading", true);
-                      setFilter("geography", e);
-                      setFilter("page", "1");
+                      updateQuery({ page: "1", geography: e.map(item => item.value).join(",") });
                     }}
                   />
                 </div>
@@ -312,11 +351,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                     name="demography"
                     label={t("catalogue:demography")}
                     options={demographies}
-                    value={filter.demography}
+                    value={queryState.demography}
                     onChange={e => {
-                      setData("loading", true);
-                      setFilter("demography", e);
-                      setFilter("page", "1");
+                      updateQuery({ page: "1", demography: e.map(item => item.value).join(",") });
                     }}
                   />
                 </div>
@@ -326,7 +363,6 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                     className="w-full justify-center"
                     disabled={!actives.filter(e => !e.includes("page")).length}
                     onClick={() => {
-                      setData("loading", true);
                       reset();
                     }}
                   >
@@ -350,11 +386,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             width="w-fit"
             options={frequencies}
             placeholder={t("catalogue:frequency")}
-            selected={frequencies.find(e => e.value === filter.frequency?.value) ?? undefined}
+            selected={frequencies.find(e => e.value === queryState.frequency?.value) ?? undefined}
             onChange={e => {
-              setData("loading", true);
-              setFilter("frequency", e);
-              setFilter("page", "1");
+              updateQuery({ page: "1", frequency: e.value });
             }}
           />
           <Dropdown
@@ -364,11 +398,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             enableClear
             title={t("catalogue:geography")}
             options={geographies}
-            selected={filter.geography}
+            selected={queryState.geography}
             onChange={e => {
-              setData("loading", true);
-              setFilter("geography", e);
-              setFilter("page", "1");
+              updateQuery({ page: "1", geography: e.map(item => item.value).join(",") });
             }}
           />
           <Dropdown
@@ -379,11 +411,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             title={t("catalogue:demography")}
             description={t("catalogue:placeholder.demography") + ":"}
             options={demographies}
-            selected={filter.demography}
+            selected={queryState.demography}
             onChange={e => {
-              setData("loading", true);
-              setFilter("demography", e);
-              setFilter("page", "1");
+              updateQuery({ page: "1", demography: e.map(item => item.value).join(",") });
             }}
           />
           {actives.length > 0 &&
@@ -393,7 +423,6 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                 className="group"
                 disabled={!actives.length}
                 onClick={() => {
-                  setData("loading", true);
                   reset();
                 }}
               >
@@ -403,11 +432,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             )}
         </div>
 
-        {data.loading ? (
-          <div className="flex h-[300px] w-full items-center justify-center">
-            <Spinner loading={data.loading} />
-          </div>
-        ) : publications.length === 0 ? (
+        {publications.length === 0 ? (
           <p className="flex h-[300px] w-full items-center justify-center text-dim">
             {t("common:common.no_entries")}.
           </p>
@@ -432,13 +457,14 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                       setData("modal_loading", true);
                       setShow(true);
                       push(
-                        routes.PUBLICATIONS.concat(
-                          "/",
-                          item.publication_id,
-                          actives.length ? queries : ""
-                        ),
+                        {
+                          pathname: `${routes.PUBLICATIONS}/${item.publication_id}`,
+                          query: query,
+                        },
                         routes.PUBLICATIONS.concat("/", item.publication_id),
-                        { scroll: false }
+                        {
+                          scroll: false,
+                        }
                       );
                     }}
                   />
@@ -465,9 +491,19 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
           show={show}
           hide={() => {
             setShow(false);
-            push(routes.PUBLICATIONS.concat(actives.length ? queries : ""), undefined, {
-              scroll: false,
-            });
+            push(
+              {
+                pathname: router.pathname,
+                query: {
+                  ...query,
+                  pub_id: undefined,
+                },
+              },
+              undefined,
+              {
+                scroll: false,
+              }
+            );
           }}
         />
 
@@ -477,10 +513,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
               className="btn-disabled"
               variant="default"
               onClick={() => {
-                setData("loading", true);
-                setFilter("page", `${+filter.page - 1}`);
+                updateQuery({ page: `${+queryState.page - 1}` });
               }}
-              disabled={filter.page === "1"}
+              disabled={queryState.page === "1"}
             >
               <ChevronLeftIcon className="h-4.5 w-4.5" />
               {t("common:common.previous")}
@@ -488,7 +523,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
 
             <span className="flex items-center gap-1 text-center">
               {t("common:common.page_of", {
-                current: filter.page,
+                current: queryState.page,
                 total: Math.ceil(total_pubs / ITEMS_PER_PAGE),
               })}
             </span>
@@ -496,10 +531,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
               variant="default"
               className="btn-disabled"
               onClick={() => {
-                setData("loading", true);
-                setFilter("page", `${+filter.page + 1}`);
+                updateQuery({ page: `${+queryState.page + 1}` });
               }}
-              disabled={filter.page === `${Math.ceil(total_pubs / ITEMS_PER_PAGE)}`}
+              disabled={queryState.page === `${Math.ceil(total_pubs / ITEMS_PER_PAGE)}`}
             >
               {t("common:common.next")}
               <ChevronRightIcon className="h-4.5 w-4.5" />

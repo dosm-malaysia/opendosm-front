@@ -60,7 +60,6 @@ const PublicationCard: FunctionComponent<PublicationCardProps> = ({
           <p className="text-dim text-sm font-normal">{publication.description}</p>
         </div>
         <div className="relative w-full text-base font-normal">
-          {/* TODO: View counts (add back when ready) */}
           <p className="text-dim transition-transform group-hover:translate-y-6">
             {numFormat(publication.total_downloads, "compact")}{" "}
             {t("common:common.downloads", {
