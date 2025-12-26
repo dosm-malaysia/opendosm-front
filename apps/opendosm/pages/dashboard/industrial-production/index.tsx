@@ -4,7 +4,7 @@ import { Metadata } from "datagovmy-ui/components";
 import { AnalyticsProvider } from "datagovmy-ui/contexts/analytics";
 import { withi18n } from "datagovmy-ui/decorators";
 import { useTranslation } from "datagovmy-ui/hooks";
-import { GetStaticProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const IndustrialProduction = ({
   meta,
@@ -12,7 +12,7 @@ const IndustrialProduction = ({
   next_update,
   timeseries,
   timeseries_callouts,
-}: InferGetServerSidePropsType<typeof getStaticProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["dashboard-industrial-production"]);
 
   return (

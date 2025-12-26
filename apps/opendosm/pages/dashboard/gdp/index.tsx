@@ -4,7 +4,7 @@ import { Metadata } from "datagovmy-ui/components";
 import { AnalyticsProvider } from "datagovmy-ui/contexts/analytics";
 import { withi18n } from "datagovmy-ui/decorators";
 import { useTranslation } from "datagovmy-ui/hooks";
-import { GetStaticProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const GDP = ({
   last_updated,
@@ -12,7 +12,7 @@ const GDP = ({
   meta,
   timeseries,
   timeseries_callouts,
-}: InferGetServerSidePropsType<typeof getStaticProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["dashboard-gdp", "common"]);
 
   return (

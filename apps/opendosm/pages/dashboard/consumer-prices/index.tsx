@@ -4,7 +4,7 @@ import { Metadata } from "datagovmy-ui/components";
 import { AnalyticsProvider } from "datagovmy-ui/contexts/analytics";
 import { withi18n } from "datagovmy-ui/decorators";
 import { useTranslation } from "datagovmy-ui/hooks";
-import { GetStaticProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const ConsumerPrices = ({
   meta,
@@ -14,7 +14,7 @@ const ConsumerPrices = ({
   timeseries,
   timeseries_callouts,
   choropleth,
-}: InferGetServerSidePropsType<typeof getStaticProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["dashboard-consumer-prices", "common"]);
 
   return (

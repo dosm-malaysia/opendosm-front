@@ -5,7 +5,7 @@ import { AnalyticsProvider } from "datagovmy-ui/contexts/analytics";
 import { withi18n } from "datagovmy-ui/decorators";
 import { useTranslation } from "datagovmy-ui/hooks";
 import { Page } from "datagovmy-ui/types";
-import { GetStaticProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const ProducerPrices: Page = ({
   meta,
@@ -13,7 +13,7 @@ const ProducerPrices: Page = ({
   next_update,
   timeseries,
   timeseries_callouts,
-}: InferGetServerSidePropsType<typeof getStaticProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["dashboard-producer-prices"]);
 
   return (
