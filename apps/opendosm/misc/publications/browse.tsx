@@ -166,12 +166,15 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
   );
 
   const filteredPublications = useMemo(() => {
-    if (!router.isReady) return null;
+    if (!router.isReady) {
+      return { data: [], total: 0 };
+    }
+    const search = queryState.search.toLowerCase();
     const searchFiltered = queryState.search
       ? publications.filter(
           publication =>
-            publication.title.toLowerCase().includes(queryState.search.toLowerCase()) ||
-            publication.description.toLowerCase().includes(queryState.search.toLowerCase())
+            publication.title.toLowerCase().includes(search) ||
+            publication.description.toLowerCase().includes(search)
         )
       : publications;
 
