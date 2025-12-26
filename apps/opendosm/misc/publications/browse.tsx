@@ -64,14 +64,12 @@ interface BrowsePublicationsProps {
   params: any;
   pub: PubResource | null;
   publications: Publication[];
-  total_pubs: number;
 }
 
 const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = ({
   params,
   pub,
   publications,
-  total_pubs,
 }) => {
   const { send_new_analytics } = useContext(AnalyticsContext);
   const { t, i18n } = useTranslation(["publications", "catalogue", "common"]);
@@ -155,15 +153,39 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
 
   const actives: Array<[string, unknown]> = useMemo(
     () =>
-      Object.entries(data).filter(
-        ([_, value]) =>
-          value !== undefined &&
-          value !== null &&
-          (value as Array<any>).length !== 0 &&
-          value !== ""
-      ),
+      !router.isReady
+        ? null
+        : Object.entries(queryState).filter(
+            ([_, value]) =>
+              value !== undefined &&
+              value !== null &&
+              (value as Array<any>).length !== 0 &&
+              value !== ""
+          ),
     [queryState]
   );
+
+  const filteredPublications = useMemo(() => {
+    if (!router.isReady) return null;
+    const searchFiltered = queryState.search
+      ? publications.filter(
+          publication =>
+            publication.title.toLowerCase().includes(queryState.search.toLowerCase()) ||
+            publication.description.toLowerCase().includes(queryState.search.toLowerCase())
+        )
+      : publications;
+
+    // TODO: implement filter by frequency, geography, demography
+
+    const page = parseInt(queryState.page) || 1;
+    const startIndex = (page - 1) * ITEMS_PER_PAGE;
+    const paginated = searchFiltered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    return {
+      data: paginated,
+      total: searchFiltered.length,
+    };
+  }, [queryState, publications]);
 
   useEffect(() => {
     show ? (document.body.style.overflow = "hidden") : (document.body.style.overflow = "unset");
@@ -432,7 +454,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             )}
         </div>
 
-        {publications.length === 0 ? (
+        {filteredPublications.data.length === 0 ? (
           <p className="flex h-[300px] w-full items-center justify-center text-dim">
             {t("common:common.no_entries")}.
           </p>
@@ -448,7 +470,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
           >
             <Panel name={t("card_view")} key={"card_view"}>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {publications.map((item: Publication) => (
+                {filteredPublications.data.map((item: Publication) => (
                   <PublicationCard
                     key={item.publication_id}
                     publication={item}
@@ -474,7 +496,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             <Panel name={t("list_view")} key={"list_view"}>
               <Table
                 className="md:mx-auto"
-                data={publications}
+                data={filteredPublications.data}
                 enablePagination={filteredRes.length > ITEMS_PER_PAGE ? ITEMS_PER_PAGE : false}
                 config={pubConfig}
               />
@@ -507,7 +529,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
           }}
         />
 
-        {total_pubs > ITEMS_PER_PAGE && (
+        {filteredPublications.total > ITEMS_PER_PAGE && (
           <div className="flex items-center justify-center gap-4 pt-8 text-sm font-medium">
             <Button
               className="btn-disabled"
@@ -524,7 +546,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             <span className="flex items-center gap-1 text-center">
               {t("common:common.page_of", {
                 current: queryState.page,
-                total: Math.ceil(total_pubs / ITEMS_PER_PAGE),
+                total: Math.ceil(filteredPublications.total / ITEMS_PER_PAGE),
               })}
             </span>
             <Button
@@ -533,7 +555,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
               onClick={() => {
                 updateQuery({ page: `${+queryState.page + 1}` });
               }}
-              disabled={queryState.page === `${Math.ceil(total_pubs / ITEMS_PER_PAGE)}`}
+              disabled={
+                queryState.page === `${Math.ceil(filteredPublications.total / ITEMS_PER_PAGE)}`
+              }
             >
               {t("common:common.next")}
               <ChevronRightIcon className="h-4.5 w-4.5" />

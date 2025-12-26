@@ -16,7 +16,6 @@ const BrowsePublications: Page = ({
   pub,
   publications,
   params,
-  total_pubs,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["publications", "common"]);
 
@@ -29,12 +28,7 @@ const BrowsePublications: Page = ({
       />
       <PublicationsLayout>
         <WindowProvider>
-          <BrowsePublicationsDashboard
-            pub={pub}
-            publications={publications}
-            params={params}
-            total_pubs={total_pubs}
-          />
+          <BrowsePublicationsDashboard pub={pub} publications={publications} params={params} />
         </WindowProvider>
       </PublicationsLayout>
     </AnalyticsProvider>
@@ -113,7 +107,6 @@ export const getStaticProps: GetStaticProps = withi18n(
                   Date.parse(b.release_date) - Date.parse(a.release_date)
               ) ?? [],
           params: { pub_id },
-          total_pubs: data.count,
         },
       };
     } catch (e: any) {
