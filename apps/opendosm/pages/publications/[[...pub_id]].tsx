@@ -108,11 +108,9 @@ export const getStaticProps: GetStaticProps = withi18n(
         "api_s3"
       );
 
-      const pub: AxiosResponse<PubResource> | null = pub_id
-        ? await get(`/publication-resource/${pub_id}`, {
-            language: locale,
-          })
-        : null;
+      const pub: AxiosResponse<
+        Record<(typeof SHORT_LANG)[keyof typeof SHORT_LANG], PubResource>
+      > | null = pub_id ? await get(`/pub/${pub_id}.json`, {}, "api_s3") : null;
 
       return {
         notFound: false,
@@ -123,7 +121,7 @@ export const getStaticProps: GetStaticProps = withi18n(
             category: null,
             agency: "DOSM",
           },
-          pub: pub ? pub.data : null,
+          pub: pub ? pub.data[SHORT_LANG[locale as keyof typeof SHORT_LANG]] : null,
           publications:
             data.results.sort(
               (a: Publication, b: Publication) => Date.parse(b.date) - Date.parse(a.date)
