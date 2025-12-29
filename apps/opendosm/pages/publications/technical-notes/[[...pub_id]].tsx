@@ -87,16 +87,14 @@ export const getServerSideProps: GetServerSideProps = withi18n(
           : null,
         publications:
           data.results
-            .map((item: Publication) => ({
+            .map((item: any) => ({
               ...item,
               total_downloads: total_downloads
                 .filter(list => list.publication_id === item.publication_id)
                 .reduce((prev, curr) => prev + curr.total_downloads, 0),
             }))
-            .sort(
-              (a: Publication, b: Publication) =>
-                Date.parse(b.release_date) - Date.parse(a.release_date)
-            ) ?? [],
+            .sort((a: any, b: any) => Date.parse(b.release_date) - Date.parse(a.release_date)) ??
+          [],
         params: { pub_id },
         query: query ?? {},
         total_pubs: data.count,
