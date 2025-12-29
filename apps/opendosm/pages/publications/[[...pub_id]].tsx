@@ -27,6 +27,7 @@ const BrowsePublications: Page = ({
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["publications", "common"]);
   const [totalDownloads, setTotalDownloads] = useState<TotalDownloads[]>([]);
+  const [trigger, setTrigger] = useState(true);
 
   useEffect(() => {
     const fetchViews = async () => {
@@ -43,12 +44,16 @@ const BrowsePublications: Page = ({
         );
         const { data } = await response.json();
         setTotalDownloads(data);
+        setTrigger(false);
       } catch (error) {
         console.error(error);
       }
     };
-    fetchViews();
-  }, []);
+
+    if (trigger) {
+      fetchViews();
+    }
+  }, [trigger]);
 
   return (
     <AnalyticsProvider meta={meta}>
@@ -83,6 +88,7 @@ const BrowsePublications: Page = ({
                 .reduce((prev, curr) => prev + curr.total_downloads, 0),
             }))}
             params={params}
+            setTrigger={setTrigger}
           />
         </WindowProvider>
       </PublicationsLayout>

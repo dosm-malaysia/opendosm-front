@@ -1,7 +1,11 @@
 import { ExcelIcon, PDFIcon, QuoteIcon } from "../../icons";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
-import { DocumentDuplicateIcon, ChevronLeftIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentDuplicateIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import Table, { TableConfig } from "datagovmy-ui/charts/table";
 import { At, Button, Search, Spinner } from "datagovmy-ui/components";
@@ -53,6 +57,7 @@ const PublicationModal: FunctionComponent<PublicationModalProps> = ({
   const { send_new_analytics } = useContext(AnalyticsContext);
   const { t, i18n } = useTranslation(["publications", "common"]);
   const { size } = useContext(WindowContext);
+  const ITEMS_PER_PAGE = 10;
 
   const TAB_OPTIONS: Array<OptionType> = [
     {
@@ -70,16 +75,23 @@ const PublicationModal: FunctionComponent<PublicationModalProps> = ({
     query: "",
     tab_index: TAB_OPTIONS[0].value,
     cite: false,
+    page: 1,
   });
 
-  const filteredRes = useMemo(
-    () =>
-      matchSorter(publication ? publication.resources : [], data.query, {
-        baseSort: (a, b) => (a.index < b.index ? -1 : 1), // no sort
-        keys: ["resource_name"],
-      }),
-    [publication, data.query]
-  );
+  const filteredRes = useMemo(() => {
+    const sorted = matchSorter(publication ? publication.resources : [], data.query, {
+      baseSort: (a, b) => (a.index < b.index ? -1 : 1), // no sort
+      keys: ["resource_name"],
+    });
+
+    const startIndex = (data.page - 1) * ITEMS_PER_PAGE;
+    const paginated = sorted.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    return {
+      data: paginated,
+      total: sorted.length,
+    };
+  }, [publication, data.query, data.page]);
 
   const config: TableConfig[] = [
     {
@@ -258,11 +270,44 @@ const PublicationModal: FunctionComponent<PublicationModalProps> = ({
                         </div>
                         <Table
                           className="pt-3 md:w-full"
-                          data={filteredRes}
-                          enablePagination={filteredRes.length > 10 ? 10 : false}
+                          data={filteredRes.data}
+                          enablePagination={false}
                           config={config}
                           precision={0}
                         />
+                        {filteredRes.total > ITEMS_PER_PAGE && (
+                          <div className="flex items-center justify-center gap-4 pt-8 text-sm font-medium">
+                            <Button
+                              className="btn-disabled"
+                              variant="default"
+                              onClick={() => {
+                                setData("page", data.page - 1);
+                              }}
+                              disabled={data.page === 1}
+                            >
+                              <ChevronLeftIcon className="h-4.5 w-4.5" />
+                              {t("common:common.previous")}
+                            </Button>
+
+                            <span className="flex items-center gap-1 text-center">
+                              {t("common:common.page_of", {
+                                current: data.page,
+                                total: Math.ceil(filteredRes.total / ITEMS_PER_PAGE),
+                              })}
+                            </span>
+                            <Button
+                              variant="default"
+                              className="btn-disabled"
+                              onClick={() => {
+                                setData("page", data.page + 1);
+                              }}
+                              disabled={data.page === Math.ceil(filteredRes.total / ITEMS_PER_PAGE)}
+                            >
+                              {t("common:common.next")}
+                              <ChevronRightIcon className="h-4.5 w-4.5" />
+                            </Button>
+                          </div>
+                        )}
                       </>
                     ) : (
                       <>

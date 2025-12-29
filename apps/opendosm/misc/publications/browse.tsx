@@ -25,7 +25,6 @@ import {
 import { toDate } from "datagovmy-ui/helpers";
 import { useCache, useData, useTranslation } from "datagovmy-ui/hooks";
 import { OptionType } from "datagovmy-ui/types";
-import { matchSorter } from "match-sorter";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FunctionComponent, useContext, useEffect, useMemo, useState } from "react";
@@ -64,12 +63,14 @@ interface BrowsePublicationsProps {
   params: any;
   pub: PubResource | null;
   publications: Publication[];
+  setTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = ({
   params,
   pub,
   publications,
+  setTrigger,
 }) => {
   const { send_new_analytics } = useContext(AnalyticsContext);
   const { t, i18n } = useTranslation(["publications", "catalogue", "common"]);
@@ -85,11 +86,6 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
   });
 
   const query = _query as PublicationQueryParams;
-
-  const filteredRes = useMemo(
-    () => matchSorter(data.pub ? data.pub.resources : [], data.query, { keys: ["resource_name"] }),
-    [data.pub, data.query]
-  );
 
   const frequencies: OptionType[] = [
     { label: t("catalogue:filter_options.monthly"), value: "MONTHLY" },
@@ -313,18 +309,9 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
           }),
         }
       );
-
-      setData("pub", {
-        ...data.pub,
-        resources: data.pub.resources.map((pub: Resource) => {
-          if (pub.resource_id === resource_id) {
-            return {
-              ...pub,
-              downloads: pub.downloads + 1,
-            };
-          } else return pub;
-        }),
-      });
+      if (response.ok) {
+        setTrigger(true);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -517,7 +504,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
               <Table
                 className="md:mx-auto"
                 data={filteredPublications.data}
-                enablePagination={filteredRes.length > ITEMS_PER_PAGE ? ITEMS_PER_PAGE : false}
+                enablePagination={false}
                 config={pubConfig}
               />
             </Panel>
