@@ -207,8 +207,6 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
     };
   }, [queryState, publications]);
 
-  console.log(filteredPublications);
-
   useEffect(() => {
     show ? (document.body.style.overflow = "hidden") : (document.body.style.overflow = "unset");
   }, [show]);
