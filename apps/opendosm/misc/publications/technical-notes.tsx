@@ -133,7 +133,7 @@ const TechnicalNotesDashboard: FunctionComponent<TechnicalNotesProps> = ({
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {publications.map((item: Publication) => (
+            {publications.map((item: any) => (
               <PublicationCard
                 key={item.publication_id}
                 publication={item}
