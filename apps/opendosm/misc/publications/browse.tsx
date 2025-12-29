@@ -174,21 +174,40 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
       ? publications.filter(
           publication =>
             publication.title.toLowerCase().includes(search) ||
-            publication.description.toLowerCase().includes(search)
+            publication.desc.toLowerCase().includes(search)
         )
       : publications;
 
-    // TODO: implement filter by frequency, geography, demography
+    const filtered = searchFiltered.filter(publication => {
+      const passesFrequency =
+        !queryState.frequency ||
+        (publication.freq &&
+          publication.freq.toUpperCase() === queryState.frequency.value.toUpperCase());
+
+      const passesGeography =
+        queryState.geography.length === 0 ||
+        (Array.isArray(publication.geo) &&
+          queryState.geography.every(geo => publication.geo.includes(geo.value)));
+
+      const passesDemography =
+        queryState.demography.length === 0 ||
+        (Array.isArray(publication.demog) &&
+          queryState.demography.every(demo => publication.demog.includes(demo.value)));
+
+      return passesFrequency && passesGeography && passesDemography;
+    });
 
     const page = parseInt(queryState.page) || 1;
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
-    const paginated = searchFiltered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const paginated = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     return {
       data: paginated,
-      total: searchFiltered.length,
+      total: filtered.length,
     };
   }, [queryState, publications]);
+
+  console.log(filteredPublications);
 
   useEffect(() => {
     show ? (document.body.style.overflow = "hidden") : (document.body.style.overflow = "unset");
@@ -248,8 +267,8 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
       id: "release_date",
       header: t("table.release_date"),
       className: "w-fit",
-      accessorFn({ release_date }) {
-        return toDate(release_date, "dd MMM yyyy", i18n.language);
+      accessorFn({ date }) {
+        return toDate(date, "dd MMM yyyy", i18n.language);
       },
     },
     {
@@ -475,7 +494,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {filteredPublications.data.map((item: Publication) => (
                   <PublicationCard
-                    key={item.publication_id}
+                    key={item.id}
                     publication={item}
                     sendAnalytics={send_new_analytics}
                     onClick={() => {
@@ -483,10 +502,10 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                       setShow(true);
                       push(
                         {
-                          pathname: `${routes.PUBLICATIONS}/${item.publication_id}`,
+                          pathname: `${routes.PUBLICATIONS}/${item.id}`,
                           query: query,
                         },
-                        routes.PUBLICATIONS.concat("/", item.publication_id),
+                        routes.PUBLICATIONS.concat("/", item.id),
                         {
                           scroll: false,
                         }

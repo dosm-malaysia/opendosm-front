@@ -11,6 +11,7 @@ import PublicationsLayout from "misc/publications/layout";
 import { GetStaticProps, GetStaticPaths, InferGetStaticPropsType } from "next";
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
+import { SHORT_LANG } from "datagovmy-ui/constants";
 
 interface TotalDownloads {
   publication_id: string;
@@ -78,7 +79,7 @@ const BrowsePublications: Page = ({
             publications={publications.map((item: Publication) => ({
               ...item,
               total_downloads: totalDownloads
-                .filter(list => list.publication_id === item.publication_id)
+                .filter(list => list.publication_id === item.id)
                 .reduce((prev, curr) => prev + curr.total_downloads, 0),
             }))}
             params={params}
@@ -101,7 +102,11 @@ export const getStaticProps: GetStaticProps = withi18n(
   async ({ locale, params }) => {
     try {
       const pub_id = params.pub_id ? params.pub_id[0] : "";
-      const { data } = await get("/publication/", { language: locale });
+      const { data } = await get(
+        `/pub/index_${SHORT_LANG[locale as keyof typeof SHORT_LANG]}.json`,
+        {},
+        "api_s3"
+      );
 
       const pub: AxiosResponse<PubResource> | null = pub_id
         ? await get(`/publication-resource/${pub_id}`, {
@@ -121,8 +126,7 @@ export const getStaticProps: GetStaticProps = withi18n(
           pub: pub ? pub.data : null,
           publications:
             data.results.sort(
-              (a: Publication, b: Publication) =>
-                Date.parse(b.release_date) - Date.parse(a.release_date)
+              (a: Publication, b: Publication) => Date.parse(b.date) - Date.parse(a.date)
             ) ?? [],
           params: { pub_id },
         },

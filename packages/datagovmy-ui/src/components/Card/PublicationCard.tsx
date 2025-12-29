@@ -6,17 +6,19 @@ import { DateTime } from "luxon";
 import { FunctionComponent } from "react";
 
 export type Publication = {
-  description: string;
-  publication_id: string;
-  publication_type: string;
-  release_date: string;
+  date: string;
+  id: string;
   title: string;
+  desc: string;
+  freq: string;
+  geo: string[];
+  demog: string[];
   total_downloads: number;
 };
 
 interface PublicationCardProps {
   onClick: () => void;
-  publication: Publication;
+  publication: Omit<Publication, "freq" | "geo" | "demog">;
   sendAnalytics: (id: string, type: string, event: string) => void;
 }
 
@@ -26,23 +28,23 @@ const PublicationCard: FunctionComponent<PublicationCardProps> = ({
   sendAnalytics,
 }) => {
   const { t, i18n } = useTranslation(["publications", "common"]);
-  const diffInDays = DateTime.now().diff(DateTime.fromISO(publication.release_date), ["days"]);
+  const diffInDays = DateTime.now().diff(DateTime.fromISO(publication.date), ["days"]);
 
   const handleClick = () => {
     onClick();
-    sendAnalytics(publication.publication_id, "publication", "page_view");
+    sendAnalytics(publication.id, "publication", "page_view");
   };
 
   return (
     <Button
       variant="reset"
-      key={publication.publication_id}
+      key={publication.id}
       className="hover:border-outlineHover hover:bg-background dark:border-washed-dark dark:hover:border-outlineHover-dark dark:hover:bg-washed-dark/50 group flex w-full flex-col space-y-3 rounded-xl border p-6 transition"
       onClick={handleClick}
     >
       <div className="relative flex w-full items-center justify-between">
         <p className="text-dim text-sm font-medium uppercase">
-          {toDate(publication.release_date, "dd MMM yyyy", i18n.language)}
+          {toDate(publication.date, "dd MMM yyyy", i18n.language)}
         </p>
         {/* If release date is within 1 week from today */}
         {diffInDays.days < 8 && (
@@ -57,7 +59,7 @@ const PublicationCard: FunctionComponent<PublicationCardProps> = ({
       <div className="flex grow flex-col gap-3 overflow-hidden text-start">
         <div className="grow flex-wrap space-y-3">
           <p className="text-lg font-bold">{publication.title}</p>
-          <p className="text-dim text-sm font-normal">{publication.description}</p>
+          <p className="text-dim text-sm font-normal">{publication.desc}</p>
         </div>
         <div className="relative w-full text-base font-normal">
           <p className="text-dim transition-transform group-hover:translate-y-6">

@@ -163,14 +163,11 @@ const GUIOpendosmPub: Page = ({ meta }: InferGetStaticPropsType<typeof getStatic
                     sendAnalytics={send_new_analytics}
                     onClick={() => null}
                     publication={{
-                      publication_id: data.publication,
-                      description: data.description
+                      id: data.publication,
+                      desc: data.description
                         ? data.description
                         : "The publication description preview in English. This is required for a publication",
-                      publication_type: data.publication_type,
-                      release_date: data.release_date
-                        ? data.release_date
-                        : DateTime.now().toISODate(),
+                      date: data.release_date ? data.release_date : DateTime.now().toISODate(),
                       title: data.title ? data.title : "[PUBLICATION TITLE]",
                       total_downloads: 0,
                     }}
@@ -180,14 +177,11 @@ const GUIOpendosmPub: Page = ({ meta }: InferGetStaticPropsType<typeof getStatic
                     sendAnalytics={send_new_analytics}
                     onClick={() => null}
                     publication={{
-                      publication_id: data.publication,
-                      description: data.description_bm
+                      id: data.publication,
+                      desc: data.description_bm
                         ? data.description_bm
                         : "The publication description preview in Bahasa Malaysia. This is required for a publication",
-                      publication_type: data.publication_type,
-                      release_date: data.release_date
-                        ? data.release_date
-                        : DateTime.now().toISODate(),
+                      date: data.release_date ? data.release_date : DateTime.now().toISODate(),
                       title: data.title_bm ? data.title_bm : "[TAJUK PENERBITAN]",
                       total_downloads: 0,
                     }}
