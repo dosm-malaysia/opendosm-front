@@ -246,10 +246,10 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
               setShow(true);
               push(
                 {
-                  pathname: `${routes.PUBLICATIONS}/${row.original.publication_id}`,
+                  pathname: `${routes.PUBLICATIONS}/${row.original.id}`,
                   query: query,
                 },
-                routes.PUBLICATIONS.concat("/", row.original.publication_id),
+                routes.PUBLICATIONS.concat("/", row.original.id),
                 {
                   scroll: false,
                 }

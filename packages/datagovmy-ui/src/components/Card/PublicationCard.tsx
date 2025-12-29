@@ -58,8 +58,8 @@ const PublicationCard: FunctionComponent<PublicationCardProps> = ({
 
       <div className="flex grow flex-col gap-3 overflow-hidden text-start">
         <div className="grow flex-wrap space-y-3">
-          <p className="text-lg font-bold">{publication.title}</p>
-          <p className="text-dim text-sm font-normal">{publication.desc}</p>
+          <p className="text-lg font-bold line-clamp-1">{publication.title}</p>
+          <p className="text-dim text-sm font-normal line-clamp-2">{publication.desc}</p>
         </div>
         <div className="relative w-full text-base font-normal">
           <p className="text-dim transition-transform group-hover:translate-y-6">
