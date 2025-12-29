@@ -342,7 +342,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             placeholder={t("search_publication")}
             value={queryState.search}
             onChange={e => {
-              updateQuery({ page: "1", search: e });
+              updateQuery({ page: undefined, search: e });
             }}
           />
           <span className="absolute left-4 top-3.5">
@@ -555,7 +555,11 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
               className="btn-disabled"
               variant="default"
               onClick={() => {
-                updateQuery({ page: `${+queryState.page - 1}` });
+                updateQuery({
+                  ...(+queryState.page - 1 > 1
+                    ? { page: `${+queryState.page - 1}` }
+                    : { page: undefined }),
+                });
               }}
               disabled={queryState.page === "1"}
             >
