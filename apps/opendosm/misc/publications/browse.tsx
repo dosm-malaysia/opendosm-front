@@ -2,7 +2,6 @@ import {
   PublicationModal,
   PublicationCard,
   PubResource,
-  Resource,
   Publication,
   Input,
 } from "datagovmy-ui/components";
@@ -81,7 +80,6 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
   const ITEMS_PER_PAGE = 15;
   const { data, setData } = useData({
     modal_loading: false,
-    pub: pub,
     tab: 0,
   });
 
@@ -276,7 +274,6 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
   useEffect(() => {
     if (pub) {
       setShow(true);
-      setData("pub", pub);
     }
     if (cache.has("tab")) {
       setData("tab", cache.get("tab"));
@@ -515,7 +512,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
           type="/"
           pub_id={params.pub_id}
           post={resource_id => postDownload(resource_id)}
-          publication={data.pub}
+          publication={pub}
           loading={data.modal_loading}
           show={show}
           hide={() => {

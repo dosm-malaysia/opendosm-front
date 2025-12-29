@@ -41,7 +41,7 @@ interface PublicationModalProps {
   loading: true;
   post: (resource_id: number) => void;
   pub_id: string;
-  publication?: PubResource;
+  publication: PubResource;
   show: boolean;
   type: "/" | "/technical-notes/";
 }
