@@ -16,7 +16,7 @@ import {
 } from "datagovmy-ui/components";
 import { BREAKPOINTS } from "datagovmy-ui/constants";
 import { WindowContext } from "datagovmy-ui/contexts/window";
-import { useFilter, useTranslation } from "datagovmy-ui/hooks";
+import { useTranslation } from "datagovmy-ui/hooks";
 import { Agency, OptionType, SiteName } from "datagovmy-ui/types";
 import {
   FunctionComponent,
@@ -30,6 +30,8 @@ import {
 } from "react";
 import CatalogueCard from "../Card";
 import { Catalogue } from "../../../types/data-catalogue";
+import { ParsedUrlQuery } from "querystring";
+import { useRouter } from "next/router";
 
 /**
  * Catalogue Index
@@ -37,18 +39,12 @@ import { Catalogue } from "../../../types/data-catalogue";
  */
 
 interface CatalogueIndexProps {
-  query: Record<string, string>;
   collection: Record<string, any>;
   sources: string[];
   site: SiteName;
 }
 
-const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
-  query,
-  collection,
-  sources,
-  site,
-}) => {
+const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({ collection, sources, site }) => {
   const { t } = useTranslation(["catalogue", "common"]);
   const scrollRef = useRef<Record<string, HTMLElement | null>>({});
   const filterRef = useRef<CatalogueFilterRef>(null);
@@ -57,17 +53,46 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
     label: t(`agencies:${source.toLowerCase()}.full`),
     value: source,
   }));
+  const { query: _query, ...router } = useRouter();
+  const query = _query as DCIndexQueryParams;
+
+  const filteredCollection = useMemo(() => {
+    if (!query?.search) return collection;
+
+    const search = query.search.toLowerCase();
+    const result: Record<string, any> = {};
+
+    Object.entries(collection).forEach(([category, subcategories]) => {
+      const filteredSubcategories: Record<string, Catalogue[]> = {};
+
+      Object.entries(subcategories).forEach(([subcategoryTitle, datasets]) => {
+        const filteredDatasets = (datasets as Catalogue[]).filter(
+          d => d.title.toLowerCase().includes(search) || d.desc?.toLowerCase().includes(search)
+        );
+
+        if (filteredDatasets.length > 0) {
+          filteredSubcategories[subcategoryTitle] = filteredDatasets;
+        }
+      });
+
+      if (Object.keys(filteredSubcategories).length > 0) {
+        result[category] = filteredSubcategories;
+      }
+    });
+
+    return result;
+  }, [collection, query?.search]);
 
   const _collection = useMemo<Array<[string, any]>>(() => {
     const resultCollection: Array<[string, Catalogue[]]> = [];
-    Object.entries(collection).forEach(([category, subcategory]) => {
+    Object.entries(filteredCollection).forEach(([category, subcategory]) => {
       Object.entries(subcategory).forEach(([subcategory_title, datasets]) => {
         resultCollection.push([`${category}: ${subcategory_title}`, datasets as Catalogue[]]);
       });
     });
 
     return resultCollection;
-  }, [collection]);
+  }, [filteredCollection]);
 
   const getHeaderText = (
     site: SiteName
@@ -133,10 +158,13 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
               options={sourceOptions}
               selected={
                 query.source
-                  ? { label: t(`agencies:${query.source.toLowerCase()}.full`), value: query.source }
+                  ? {
+                      label: t(`agencies:${query.source.toLowerCase()}.full`),
+                      value: query.source,
+                    }
                   : undefined
               }
-              onChange={e => filterRef.current?.setFilter("source", e)}
+              onChange={e => filterRef.current?.updateQuery({ source: e.value })}
               enableSearch
               enableClear
             />
@@ -151,7 +179,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
 
       <Container className="min-h-screen lg:px-0 lg:pl-6">
         <Sidebar
-          categories={Object.entries(collection).map(([category, subcategory]) => [
+          categories={Object.entries(filteredCollection).map(([category, subcategory]) => [
             category,
             Object.keys(subcategory),
           ])}
@@ -164,7 +192,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
           }
         >
           <div className="flex flex-1 flex-col">
-            <CatalogueFilter ref={filterRef} query={query} sources={sourceOptions} />
+            <CatalogueFilter ref={filterRef} sources={sourceOptions} />
 
             {_collection.length > 0 ? (
               _collection.map(([title, datasets]) => {
@@ -195,22 +223,44 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({
   );
 };
 
+interface DCIndexQueryParams extends ParsedUrlQuery {
+  demography: string;
+  frequency: string;
+  geography: string;
+  source: string;
+  search: string;
+  begin: string;
+  end: string;
+}
+
+const DEFAULTS = {
+  search: "" as string,
+  source: "" as string,
+  frequency: "" as string,
+  demography: [] as OptionType[],
+  geography: [] as OptionType[],
+  begin: "" as string,
+  end: "" as string,
+} as const;
+
 /**
  * Catalogue Filter Component
  */
 interface CatalogueFilterProps {
-  query: Record<string, any>;
   sources: OptionType[];
-  ref?: LegacyRef<CatalogueFilterRef>;
+  ref: LegacyRef<CatalogueFilterRef>;
 }
 
 interface CatalogueFilterRef {
-  setFilter: (key: string, value: any) => void;
+  updateQuery: (updates?: Record<string, any> | undefined) => void;
 }
 
 const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forwardRef(
-  ({ query, sources }, ref) => {
+  ({ sources }, ref) => {
     const { t } = useTranslation(["catalogue", "common"]);
+    const { query: _query, replace, ...router } = useRouter();
+    const query = _query as DCIndexQueryParams;
+
     const frequencies: OptionType[] = [
       { label: t("filter_options.daily"), value: "DAILY" },
       { label: t("filter_options.weekly"), value: "WEEKLY" },
@@ -246,38 +296,70 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
         .fill(start)
         .map((year, index) => ({ label: `${year + index}`, value: `${year + index}` }));
 
-    const { filter, setFilter, actives } = useFilter({
-      frequency: query.frequency
-        ? frequencies.find(item => item.value === query.frequency)
-        : undefined,
-      geography: query.geography
-        ? geographies.filter(item => query.geography.split(",").includes(item.value))
-        : [],
-      demography: query.demography
-        ? demographies.filter(item => query.demography.split(",").includes(item.value))
-        : [],
-      begin: query.begin
-        ? filterYears(startYear, endYear).find(item => item.value === query.begin)
-        : undefined,
-      end: query.end
-        ? filterYears(startYear, endYear).find(item => item.value === query.end)
-        : undefined,
-      source: query.source ? sources.find(item => query.source === item.value) : [],
-      search: query.search ?? "",
-    });
+    const queryState = useMemo(() => {
+      if (!router.isReady) return null;
+
+      return {
+        search: query.search ?? DEFAULTS.search,
+        source: query.source ?? DEFAULTS.source,
+        frequency: query.frequency ?? DEFAULTS.frequency,
+        demography: query.demography
+          ? demographies.filter(item => query.demography.split(",").includes(item.value))
+          : DEFAULTS.demography,
+        geography: query.geography
+          ? geographies.filter(item => query.geography.split(",").includes(item.value))
+          : DEFAULTS.geography,
+        begin: query.begin ?? DEFAULTS.begin,
+        end: query.end ?? DEFAULTS.end,
+      };
+    }, [router.isReady, _query]);
+
+    const updateQuery = (updates?: Record<string, any>) => {
+      const nextQuery = (updates ? { ...query, ...updates } : {}) as typeof query;
+
+      (Object.keys(nextQuery) as Array<keyof typeof nextQuery>).forEach(key => {
+        const value = nextQuery[key];
+        if (value === undefined || value === null || value === "") {
+          delete nextQuery[key];
+        }
+      });
+
+      replace(
+        {
+          pathname: router.pathname,
+          query: nextQuery,
+        },
+        undefined,
+        { shallow: true }
+      );
+    };
+
+    const actives = useMemo<
+      Array<[keyof typeof DEFAULTS, (typeof DEFAULTS)[keyof typeof DEFAULTS]]>
+    >(() => {
+      if (!router.isReady || !queryState) return [];
+
+      return (
+        Object.entries(queryState) as Array<
+          [keyof typeof DEFAULTS, (typeof DEFAULTS)[keyof typeof DEFAULTS]]
+        >
+      ).filter(([_, value]) => {
+        if (value === undefined || value === null) return false;
+        if (value === "") return false;
+        if (Array.isArray(value)) return value.length > 0;
+        return true;
+      });
+    }, [router.isReady, queryState]);
 
     const reset = () => {
-      setFilter("search", "");
-      setFilter("frequency", undefined);
-      setFilter("geography", []);
-      setFilter("demography", []);
-      setFilter("begin", undefined);
-      setFilter("end", undefined);
+      updateQuery();
     };
 
     useImperativeHandle(ref, () => {
-      return { setFilter };
+      return { updateQuery };
     });
+
+    if (!queryState) return null;
 
     return (
       <div className="dark:border-washed-dark sticky top-14 z-10 flex items-center justify-between gap-2 border-b bg-white py-3 lg:pl-2 dark:bg-black">
@@ -285,8 +367,10 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
           <Search
             className="border-none"
             placeholder={t("placeholder.search")}
-            query={filter.search}
-            onChange={e => setFilter("search", e)}
+            query={queryState.search}
+            onChange={e => {
+              updateQuery({ search: e });
+            }}
           />
         </div>
         {actives.length > 0 && actives.findIndex(active => active[0] !== "source") !== -1 && (
@@ -320,8 +404,10 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
                     name="frequency"
                     label={t("frequency")}
                     options={frequencies}
-                    value={filter.frequency}
-                    onChange={e => setFilter("frequency", e)}
+                    value={frequencies.find(freq => freq.value === queryState.frequency)}
+                    onChange={e => {
+                      updateQuery({ frequency: e.value });
+                    }}
                   />
                 </div>
                 <div className="py-3">
@@ -329,8 +415,10 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
                     name="geography"
                     label={t("geography")}
                     options={geographies}
-                    value={filter.geography}
-                    onChange={e => setFilter("geography", e)}
+                    value={queryState.geography}
+                    onChange={e => {
+                      updateQuery({ geography: e.map(item => item.value).join(",") });
+                    }}
                   />
                 </div>
                 <div className="py-3">
@@ -338,8 +426,10 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
                     name="demography"
                     label={t("demography")}
                     options={demographies}
-                    value={filter.demography}
-                    onChange={e => setFilter("demography", e)}
+                    value={queryState.demography}
+                    onChange={e => {
+                      updateQuery({ demography: e.map(item => item.value).join(",") });
+                    }}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3 pt-3">
@@ -348,19 +438,27 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
                     width="w-full"
                     anchor="left-0 bottom-10"
                     options={filterYears(startYear, endYear)}
-                    selected={filter.begin}
                     placeholder={t("common:common.select")}
-                    onChange={e => setFilter("begin", e)}
+                    selected={filterYears(startYear, endYear).find(
+                      year => year.value === queryState.begin
+                    )}
+                    onChange={e => {
+                      updateQuery({ begin: e.value });
+                    }}
                   />
                   <Dropdown
                     label={t("end")}
                     width="w-full"
                     anchor="right-0 bottom-10"
-                    disabled={!filter.begin}
-                    options={filter.begin ? filterYears(+filter.begin.value, endYear) : []}
-                    selected={filter.end}
+                    disabled={!queryState.begin}
+                    options={queryState.begin ? filterYears(+queryState.begin, endYear) : []}
                     placeholder={t("common:common.select")}
-                    onChange={e => setFilter("end", e)}
+                    selected={filterYears(startYear, endYear).find(
+                      year => year.value === queryState.end
+                    )}
+                    onChange={e => {
+                      updateQuery({ end: e.value });
+                    }}
                   />
                 </div>
                 <div className="dark:border-washed-dark fixed bottom-0 left-0 flex w-full flex-col border-t bg-white p-3 dark:bg-black">
@@ -397,16 +495,20 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
           <Dropdown
             options={frequencies}
             placeholder={t("frequency")}
-            selected={frequencies.find(item => item.value === filter.frequency?.value) ?? undefined}
-            onChange={e => setFilter("frequency", e)}
+            selected={frequencies.find(e => e.value === queryState.frequency) ?? undefined}
+            onChange={e => {
+              updateQuery({ frequency: e.value });
+            }}
           />
           <Dropdown
             multiple
             enableClear
             title={t("geography")}
             options={geographies}
-            selected={filter.geography}
-            onChange={e => setFilter("geography", e)}
+            selected={queryState.geography}
+            onChange={e => {
+              updateQuery({ geography: e.map((item: OptionType) => item.value).join(",") });
+            }}
           />
           <Dropdown
             multiple
@@ -414,8 +516,10 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
             title={t("demography")}
             description={t("placeholder.demography") + ":"}
             options={demographies}
-            selected={filter.demography}
-            onChange={e => setFilter("demography", e)}
+            selected={queryState.demography}
+            onChange={e => {
+              updateQuery({ demography: e.map((item: OptionType) => item.value).join(",") });
+            }}
           />
 
           <Daterange
@@ -424,12 +528,11 @@ const CatalogueFilter: ForwardRefExoticComponent<CatalogueFilterProps> = forward
             selectedStart={query.begin}
             selectedEnd={query.end}
             onChange={([begin, end]) => {
-              if (begin) setFilter("begin", { label: begin, value: begin });
-              if (end) setFilter("end", { label: end, value: end });
+              if (begin) updateQuery({ begin: begin });
+              if (end) updateQuery({ end: end });
             }}
             onReset={() => {
-              setFilter("begin", undefined);
-              setFilter("end", undefined);
+              updateQuery({ begin: "", end: "" });
             }}
           />
         </div>

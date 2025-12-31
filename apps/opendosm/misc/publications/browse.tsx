@@ -53,7 +53,7 @@ interface PublicationQueryParams extends ParsedUrlQuery {
 const DEFAULTS = {
   search: "" as string,
   page: "1" as string,
-  frequency: "",
+  frequency: "" as string,
   demography: [] as OptionType[],
   geography: [] as OptionType[],
 } as const;
@@ -114,9 +114,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
     return {
       search: query.search ?? DEFAULTS.search,
       page: query.page ?? DEFAULTS.page,
-      frequency: query.frequency
-        ? frequencies.find(item => item.value === query.frequency)
-        : undefined,
+      frequency: query.frequency ?? DEFAULTS.frequency,
       demography: query.demography
         ? demographies.filter(item => query.demography.split(",").includes(item.value))
         : DEFAULTS.demography,
@@ -175,8 +173,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
     const filtered = searchFiltered.filter(publication => {
       const passesFrequency =
         !queryState.frequency ||
-        (publication.freq &&
-          publication.freq.toUpperCase() === queryState.frequency.value.toUpperCase());
+        (publication.freq && publication.freq.toUpperCase() === queryState.frequency.toUpperCase());
 
       const passesGeography =
         queryState.geography.length === 0 ||
@@ -355,7 +352,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
                     name="frequency"
                     label={t("catalogue:frequency")}
                     options={frequencies}
-                    value={queryState.frequency}
+                    value={frequencies.find(freq => freq.value === queryState.frequency)}
                     onChange={e => {
                       updateQuery({ page: "1", frequency: e.value });
                     }}
@@ -412,7 +409,7 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
             width="w-fit"
             options={frequencies}
             placeholder={t("catalogue:frequency")}
-            selected={frequencies.find(e => e.value === queryState.frequency?.value) ?? undefined}
+            selected={frequencies.find(e => e.value === queryState.frequency) ?? undefined}
             onChange={e => {
               updateQuery({ page: "1", frequency: e.value });
             }}

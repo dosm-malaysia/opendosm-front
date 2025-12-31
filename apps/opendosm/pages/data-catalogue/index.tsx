@@ -6,19 +6,18 @@ import { withi18n } from "datagovmy-ui/decorators";
 import { sortAlpha } from "datagovmy-ui/helpers";
 import { useTranslation } from "datagovmy-ui/hooks";
 import { Page } from "datagovmy-ui/types";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 
 const CatalogueIndex: Page = ({
-  query,
   collection,
   sources,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["catalogue", "common"]);
 
   return (
     <>
       <Metadata title={t("header")} description={t("description")} keywords={""} />
-      <DataCatalogue query={query} collection={collection} sources={sources} site="opendosm" />
+      <DataCatalogue collection={collection} sources={sources} site="opendosm" />
     </>
   );
 };
@@ -36,40 +35,33 @@ const recurSort = (data: Record<string, Catalogue[]> | Catalogue[]): any => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = withi18n(
-  "catalogue",
-  async ({ locale, query }) => {
-    try {
-      const { data } = await get("/data-catalogue", {
-        language: SHORT_LANG[locale! as keyof typeof SHORT_LANG],
-        site: "opendosm",
-        ...query,
-      });
+export const getStaticProps: GetStaticProps = withi18n("catalogue", async ({ locale }) => {
+  try {
+    const { data } = await get(
+      `/catalogue/index_${SHORT_LANG[locale as keyof typeof SHORT_LANG]}.json`,
+      {},
+      "api_s3"
+    );
 
-      // const collection = recurSort(data.dataset);
-      const collection = data.dataset;
+    // const collection = recurSort(data.dataset);
+    const collection = data.datasets;
 
-      return {
-        props: {
-          meta: {
-            id: "catalogue-index",
-            type: "misc",
-            category: null,
-            agency: null,
-          },
-          query: query ?? {},
-          sources: data.source_filters.sort((a: string, b: string) => a.localeCompare(b)),
-          collection,
+    return {
+      props: {
+        meta: {
+          id: "catalogue-index",
+          type: "misc",
+          category: null,
+          agency: null,
         },
-      };
-    } catch (error) {
-      console.error(error);
-      return { notFound: true };
-    }
-  },
-  {
-    cache_expiry: 600, // 10 min
+        sources: data.source_filters.sort((a: string, b: string) => a.localeCompare(b)),
+        collection,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return { notFound: true };
   }
-);
+});
 
 export default CatalogueIndex;

@@ -75,14 +75,14 @@ const CatalogueCard: FunctionComponent<CatalogueCardProps> = ({
           )}
 
           <p className={clx("text-sm", alternateStyle ? "line-clamp-2" : "truncate")}>
-            {dataset.description}
+            {dataset.desc}
           </p>
         </div>
         {alternateStyle ? null : (
           <div className="flex flex-row items-center gap-1">
             <BuildingLibraryIcon className="text-dim h-4 w-4" />
             <p className="text-dim text-sm font-medium">
-              {dataset.data_source?.length ? dataset.data_source[0] : ""}
+              {dataset.source?.length ? dataset.source[0] : ""}
             </p>
             <div className="bg-dim h-1 w-1 rounded-full px-0.5" />
             <p className="text-dim text-sm">

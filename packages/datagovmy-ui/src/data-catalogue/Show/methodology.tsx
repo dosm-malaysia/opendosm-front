@@ -257,7 +257,7 @@ const DCMethodology: FunctionComponent<MethodologyProps> = ({
                 dataset={{
                   id: item.id,
                   title: item.title,
-                  description: item.description,
+                  desc: item.desc || item.description || "",
                 }}
                 index={index}
                 alternateStyle={true}

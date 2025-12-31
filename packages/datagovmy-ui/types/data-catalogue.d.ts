@@ -58,9 +58,12 @@ export type DCConfig = {
 export type Catalogue = {
   id: string;
   title: string;
-  description?: string;
+  desc?: string;
   data_as_of?: string;
-  data_source?: Array<string>;
+  source?: Array<string>;
+  freq?: string;
+  geo?: string[];
+  demog?: string[];
 };
 
 export type DCVariable = {
@@ -83,7 +86,7 @@ export type DCVariable = {
   caveat: string;
   publication?: string;
   translations: Record<string, string>;
-  related_datasets: Array<Pick<Catalogue, "id" | "title" | "description">>;
+  related_datasets: Array<Pick<Catalogue, "id" | "title" | "desc"> & { description?: string }>;
   dataviz_set: Array<DCDataViz>;
   dropdown: Array<DCFilter>;
   data: Array<Record<string, unknown>>;
