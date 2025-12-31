@@ -135,8 +135,10 @@ export const getStaticProps: GetStaticProps = withi18n(
           params: { pub_id },
         },
       };
-    } catch (e: any) {
-      return { notFound: true };
+    } catch (error) {
+      if (error.status === 404) {
+        return { notFound: true };
+      }
     }
   }
 );

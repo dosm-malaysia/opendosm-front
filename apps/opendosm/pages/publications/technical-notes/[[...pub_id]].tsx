@@ -111,34 +111,40 @@ export const getStaticPaths: GetStaticPaths = () => {
 export const getStaticProps: GetStaticProps = withi18n(
   ["publications"],
   async ({ locale, params }) => {
-    const pub_id = params.pub_id ? params.pub_id[0] : "";
-    const { data } = await get(
-      `/pub/index_technotes_${SHORT_LANG[locale as keyof typeof SHORT_LANG]}.json`,
-      {},
-      "api_s3"
-    );
+    try {
+      const pub_id = params.pub_id ? params.pub_id[0] : "";
+      const { data } = await get(
+        `/pub/index_technotes_${SHORT_LANG[locale as keyof typeof SHORT_LANG]}.json`,
+        {},
+        "api_s3"
+      );
 
-    const pub: AxiosResponse<
-      Record<(typeof SHORT_LANG)[keyof typeof SHORT_LANG], PubResource>
-    > | null = pub_id ? await get(`/pub/technotes/${pub_id}.json`, {}, "api_s3") : null;
+      const pub: AxiosResponse<
+        Record<(typeof SHORT_LANG)[keyof typeof SHORT_LANG], PubResource>
+      > | null = pub_id ? await get(`/pub/technotes/${pub_id}.json`, {}, "api_s3") : null;
 
-    return {
-      notFound: false,
-      props: {
-        meta: {
-          id: "publications",
-          type: "dashboard",
-          category: null,
-          agency: "DOSM",
+      return {
+        notFound: false,
+        props: {
+          meta: {
+            id: "publications",
+            type: "dashboard",
+            category: null,
+            agency: "DOSM",
+          },
+          pub: pub ? pub.data[SHORT_LANG[locale as keyof typeof SHORT_LANG]] : null,
+          publications:
+            data.results.sort(
+              (a: Publication, b: Publication) => Date.parse(b.date) - Date.parse(a.date)
+            ) ?? [],
+          params: { pub_id },
         },
-        pub: pub ? pub.data[SHORT_LANG[locale as keyof typeof SHORT_LANG]] : null,
-        publications:
-          data.results.sort(
-            (a: Publication, b: Publication) => Date.parse(b.date) - Date.parse(a.date)
-          ) ?? [],
-        params: { pub_id },
-      },
-    };
+      };
+    } catch (error) {
+      if (error.status === 404) {
+        return { notFound: true };
+      }
+    }
   }
 );
 
