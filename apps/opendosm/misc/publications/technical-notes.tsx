@@ -2,54 +2,109 @@ import {
   PublicationModal,
   PublicationCard,
   PubResource,
-  Resource,
   Publication,
 } from "datagovmy-ui/components";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { routes } from "@lib/routes";
-import { Button, Container, Input, Section, Spinner, toast } from "datagovmy-ui/components";
-import { useData, useFilter, useTranslation } from "datagovmy-ui/hooks";
+import { Button, Container, Input, Section } from "datagovmy-ui/components";
+import { useData, useTranslation } from "datagovmy-ui/hooks";
 import { useRouter } from "next/router";
-import { FunctionComponent, useEffect, useState, useContext } from "react";
+import { FunctionComponent, useEffect, useState, useContext, useMemo } from "react";
 import { DateTime } from "luxon";
 import { AnalyticsContext } from "datagovmy-ui/contexts/analytics";
+import { ParsedUrlQuery } from "querystring";
 
 /**
  * Technical Notes
  * @overview Status: Live
  */
 
-interface TechnicalNotesProps {
-  pub: PubResource;
-  publications: Publication[];
-  params: any;
-  query: any;
-  total_pubs: number;
+interface PublicationQueryParams extends ParsedUrlQuery {
+  page: string;
+  search: string;
 }
+
+interface TechnicalNotesProps {
+  params: any;
+  pub: PubResource | null;
+  publications: Publication[];
+  setTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const DEFAULTS = {
+  search: "" as string,
+  page: "1" as string,
+} as const;
 
 const TechnicalNotesDashboard: FunctionComponent<TechnicalNotesProps> = ({
   pub,
   publications,
   params,
-  query,
-  total_pubs,
+  setTrigger,
 }) => {
   const { send_new_analytics } = useContext(AnalyticsContext);
   const { t } = useTranslation(["publications", "common"]);
-  const { push, events } = useRouter();
+  const { push, events, query: _query, replace, ...router } = useRouter();
   const [show, setShow] = useState<boolean>(false);
   const ITEMS_PER_PAGE = 15;
   const { data, setData } = useData({
     loading: false,
     modal_loading: false,
-    pub: pub,
   });
 
-  const { filter, setFilter, actives, queries } = useFilter({
-    page: query.page ?? "",
-    search: query.search ?? "",
-  });
+  const query = _query as PublicationQueryParams;
+
+  const queryState = useMemo(() => {
+    if (!router.isReady) return null;
+
+    return {
+      search: query.search ?? DEFAULTS.search,
+      page: query.page ?? DEFAULTS.page,
+    };
+  }, [router.isReady, _query]);
+
+  const updateQuery = (updates?: Record<string, any>) => {
+    const nextQuery = updates ? { ...query, ...updates } : {};
+
+    Object.keys(nextQuery).forEach(key => {
+      if (nextQuery[key] === undefined || nextQuery[key] === null || nextQuery[key] === "") {
+        delete nextQuery[key];
+      }
+    });
+
+    replace(
+      {
+        pathname: router.pathname,
+        query: nextQuery,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const filteredPublications = useMemo(() => {
+    if (!router.isReady) {
+      return { data: [], total: 0 };
+    }
+    const search = queryState.search.toLowerCase();
+    const searchFiltered = queryState.search
+      ? publications.filter(
+          publication =>
+            publication.title.toLowerCase().includes(search) ||
+            publication.desc.toLowerCase().includes(search)
+        )
+      : publications;
+
+    const page = parseInt(queryState.page) || 1;
+    const startIndex = (page - 1) * ITEMS_PER_PAGE;
+    const paginated = searchFiltered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    return {
+      data: paginated,
+      total: searchFiltered.length,
+    };
+  }, [queryState, publications]);
 
   const postDownload = async (resource_id: number) => {
     try {
@@ -70,38 +125,33 @@ const TechnicalNotesDashboard: FunctionComponent<TechnicalNotesProps> = ({
         }
       );
 
-      setData("pub", {
-        ...data.pub,
-        resources: data.pub.resources.map((pub: Resource) => {
-          if (pub.resource_id === resource_id) {
-            return {
-              ...pub,
-              downloads: pub.downloads + 1,
-            };
-          } else return pub;
-        }),
-      });
+      if (response.ok) {
+        setTrigger(true);
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
+    show ? (document.body.style.overflow = "hidden") : (document.body.style.overflow = "unset");
+  }, [show]);
+
+  useEffect(() => {
     if (pub) {
       setShow(true);
-      setData("pub", pub);
     }
     events.on("routeChangeComplete", () => {
-      setData("loading", false);
       setData("modal_loading", false);
     });
     return () => {
       events.off("routeChangeComplete", () => {
-        setData("loading", false);
         setData("modal_loading", false);
       });
     };
   }, [pub]);
+
+  if (!queryState) return null;
 
   return (
     <Container className="min-h-screen">
@@ -111,43 +161,46 @@ const TechnicalNotesDashboard: FunctionComponent<TechnicalNotesProps> = ({
           <Input
             className="w-full truncate border-none bg-white py-3 pl-12 pr-10 text-base focus:outline-none focus:ring-0 dark:bg-black hover:dark:bg-washed-dark/50 focus:dark:bg-washed-dark"
             placeholder={t("search_publication")}
-            value={filter.search}
+            value={queryState.search}
             onChange={e => {
-              setFilter("search", e);
-              setFilter("page", "1");
-              setData("loading", true);
+              updateQuery({ page: undefined, search: e });
             }}
           />
           <span className="absolute left-4 top-3.5">
             <MagnifyingGlassIcon className="h-5 w-5 text-black dark:text-dim" />
           </span>
+          {queryState.search && (
+            <span
+              className="absolute right-4 top-3.5 group rounded-full cursor-pointer"
+              onClick={e => {
+                updateQuery({ page: undefined, search: "" });
+              }}
+            >
+              <XMarkIcon className="text-black dark:text-dim size-5 group-hover:bg-washed group-hover:dark:bg-washed-dark" />
+            </span>
+          )}
         </div>
 
-        {data.loading ? (
-          <div className="flex h-[300px] w-full items-center justify-center">
-            <Spinner loading={data.loading} />
-          </div>
-        ) : publications.length === 0 ? (
+        {filteredPublications.data.length === 0 ? (
           <p className="flex h-[300px] w-full items-center justify-center text-dim">
             {t("common:common.no_entries")}.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {publications.map((item: any) => (
+            {filteredPublications.data.map((item: Publication) => (
               <PublicationCard
-                key={item.publication_id}
+                key={item.id}
                 publication={item}
                 sendAnalytics={send_new_analytics}
                 onClick={() => {
                   setData("modal_loading", true);
                   setShow(true);
                   push(
-                    routes.PUBLICATIONS.concat(
-                      "/technical-notes/",
-                      item.publication_id,
-                      actives.length ? queries : ""
-                    ),
-                    routes.PUBLICATIONS.concat("/technical-notes/", item.publication_id),
+                    {
+                      pathname: `${routes.PUBLICATIONS_TECHNOTES}/${item.id}`,
+                      query: query,
+                    },
+                    routes.PUBLICATIONS_TECHNOTES.concat("/", item.id),
                     {
                       scroll: false,
                     }
@@ -162,13 +215,19 @@ const TechnicalNotesDashboard: FunctionComponent<TechnicalNotesProps> = ({
           type={"/technical-notes/"}
           pub_id={params.pub_id}
           post={resource_id => postDownload(resource_id)}
-          publication={data.pub}
+          publication={pub}
           loading={data.modal_loading}
           show={show}
           hide={() => {
             setShow(false);
             push(
-              routes.PUBLICATIONS.concat("/technical-notes/", actives.length ? queries : ""),
+              {
+                pathname: router.pathname,
+                query: {
+                  ...query,
+                  pub_id: undefined,
+                },
+              },
               undefined,
               {
                 scroll: false,
@@ -177,12 +236,18 @@ const TechnicalNotesDashboard: FunctionComponent<TechnicalNotesProps> = ({
           }}
         />
 
-        {total_pubs > ITEMS_PER_PAGE && (
+        {filteredPublications.total > ITEMS_PER_PAGE && (
           <div className="flex items-center justify-center gap-4 pt-8 text-sm font-medium">
             <Button
               variant="default"
-              onClick={() => setFilter("page", `${+filter.page - 1}`)}
-              disabled={filter.page === "1"}
+              onClick={() => {
+                updateQuery({
+                  ...(+queryState.page - 1 > 1
+                    ? { page: `${+queryState.page - 1}` }
+                    : { page: undefined }),
+                });
+              }}
+              disabled={queryState.page === "1"}
             >
               <ChevronLeftIcon className="h-4.5 w-4.5" />
               {t("common:common.previous")}
@@ -190,16 +255,18 @@ const TechnicalNotesDashboard: FunctionComponent<TechnicalNotesProps> = ({
 
             <span className="flex items-center gap-1 text-center">
               {t("common:common.page_of", {
-                current: filter.page,
-                total: Math.ceil(total_pubs / ITEMS_PER_PAGE),
+                current: queryState.page,
+                total: Math.ceil(filteredPublications.total / ITEMS_PER_PAGE),
               })}
             </span>
             <Button
               variant="default"
               onClick={() => {
-                setFilter("page", `${+filter.page + 1}`);
+                updateQuery({ page: `${+queryState.page + 1}` });
               }}
-              disabled={filter.page === `${Math.ceil(total_pubs / ITEMS_PER_PAGE)}`}
+              disabled={
+                queryState.page === `${Math.ceil(filteredPublications.total / ITEMS_PER_PAGE)}`
+              }
             >
               {t("common:common.next")}
               <ChevronRightIcon className="h-4.5 w-4.5" />

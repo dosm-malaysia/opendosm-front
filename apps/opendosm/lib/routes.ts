@@ -25,6 +25,8 @@ export const routes = {
   WHOLESALE_RETAIL: "/dashboard/wholesale-retail-trade",
   WELLBEING: "/dashboard/wellbeing",
   PUBLICATIONS: "/publications",
+  PUBLICATIONS_UPCOMING: "/publications/upcoming",
+  PUBLICATIONS_TECHNOTES: "/publications/technical-notes",
   NEW_SUBSCRIPTION: "/publications/subscribe",
   MANAGE_SUBSCRIPTION: "/publications/manage-subscription",
   GUI: "/gui",
@@ -34,9 +36,7 @@ export const routes = {
 };
 
 export const static_routes: string[] = (() => {
-  let s_routes = Object.values(routes).filter(
-    route => !["/data-catalogue", "/publications"].includes(route)
-  );
+  let s_routes = Object.values(routes).filter(route => !["/data-catalogue"].includes(route));
 
   s_routes.forEach(route => {
     s_routes.push(`/ms-MY${route}`);

@@ -109,14 +109,14 @@ export const getStaticProps: GetStaticProps = withi18n(
     try {
       const pub_id = params.pub_id ? params.pub_id[0] : "";
       const { data } = await get(
-        `/pub/index_${SHORT_LANG[locale as keyof typeof SHORT_LANG]}.json`,
+        `/pub/index_released_${SHORT_LANG[locale as keyof typeof SHORT_LANG]}.json`,
         {},
         "api_s3"
       );
 
       const pub: AxiosResponse<
         Record<(typeof SHORT_LANG)[keyof typeof SHORT_LANG], PubResource>
-      > | null = pub_id ? await get(`/pub/${pub_id}.json`, {}, "api_s3") : null;
+      > | null = pub_id ? await get(`/pub/released/${pub_id}.json`, {}, "api_s3") : null;
 
       return {
         notFound: false,
