@@ -57,18 +57,47 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({ collection, so
   const query = _query as DCIndexQueryParams;
 
   const filteredCollection = useMemo(() => {
-    if (!query?.search) return collection;
+    if (!query) return collection;
 
-    const search = query.search.toLowerCase();
-    const result: Record<string, any> = {};
+    const search = query.search?.toLowerCase();
+
+    const result: Record<string, Record<string, Catalogue[]>> = {};
 
     Object.entries(collection).forEach(([category, subcategories]) => {
       const filteredSubcategories: Record<string, Catalogue[]> = {};
 
       Object.entries(subcategories).forEach(([subcategoryTitle, datasets]) => {
-        const filteredDatasets = (datasets as Catalogue[]).filter(
-          d => d.title.toLowerCase().includes(search) || d.desc?.toLowerCase().includes(search)
-        );
+        const filteredDatasets = (datasets as Catalogue[]).filter(d => {
+          // ---- SEARCH ----
+          const passesSearch =
+            !search ||
+            d.title.toLowerCase().includes(search) ||
+            d.desc?.toLowerCase().includes(search);
+
+          // ---- FREQUENCY ----
+          const passesFrequency =
+            !query.frequency || (d.freq && d.freq.toUpperCase() === query.frequency.toUpperCase());
+
+          // ---- GEOGRAPHY ----
+          const passesGeography =
+            !query.geography ||
+            query.geography.split(",").every(geo => Array.isArray(d.geo) && d.geo.includes(geo));
+
+          // ---- DEMOGRAPHY ----
+          const passesDemography =
+            !query.demography ||
+            query.demography
+              .split(",")
+              .every(demog => Array.isArray(d.demog) && d.demog.includes(demog));
+
+          // ---- SOURCE ----
+          const passesSource =
+            !query.source || (Array.isArray(d.source) && d.source.includes(query.source));
+
+          return (
+            passesSearch && passesFrequency && passesGeography && passesDemography && passesSource
+          );
+        });
 
         if (filteredDatasets.length > 0) {
           filteredSubcategories[subcategoryTitle] = filteredDatasets;
@@ -81,7 +110,14 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({ collection, so
     });
 
     return result;
-  }, [collection, query?.search]);
+  }, [
+    collection,
+    query?.search,
+    query?.frequency,
+    query?.geography,
+    query?.demography,
+    query?.source,
+  ]);
 
   const _collection = useMemo<Array<[string, any]>>(() => {
     const resultCollection: Array<[string, Catalogue[]]> = [];
