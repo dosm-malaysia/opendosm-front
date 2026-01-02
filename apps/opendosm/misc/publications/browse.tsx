@@ -166,7 +166,8 @@ const BrowsePublicationsDashboard: FunctionComponent<BrowsePublicationsProps> = 
       ? publications.filter(
           publication =>
             publication.title.toLowerCase().includes(search) ||
-            publication.desc.toLowerCase().includes(search)
+            publication.desc.toLowerCase().includes(search) ||
+            publication.id.toLowerCase().includes(search)
         )
       : publications;
 

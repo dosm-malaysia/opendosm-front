@@ -72,7 +72,8 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({ collection, so
           const passesSearch =
             !search ||
             d.title.toLowerCase().includes(search) ||
-            d.desc?.toLowerCase().includes(search);
+            d.desc?.toLowerCase().includes(search) ||
+            d.id.toLowerCase().includes(search);
 
           // ---- FREQUENCY ----
           const passesFrequency =
