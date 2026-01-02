@@ -94,8 +94,23 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({ collection, so
           const passesSource =
             !query.source || (Array.isArray(d.source) && d.source.includes(query.source));
 
+          // ---- BEGIN AND END ----
+          const matchesDateRange =
+            !(query.begin && query.end) ||
+            (d.begin &&
+              d.end &&
+              query.begin &&
+              query.end &&
+              d.begin >= Number(query.begin) &&
+              d.end <= Number(query.end));
+
           return (
-            passesSearch && passesFrequency && passesGeography && passesDemography && passesSource
+            passesSearch &&
+            passesFrequency &&
+            passesGeography &&
+            passesDemography &&
+            passesSource &&
+            matchesDateRange
           );
         });
 
@@ -110,14 +125,7 @@ const CatalogueIndex: FunctionComponent<CatalogueIndexProps> = ({ collection, so
     });
 
     return result;
-  }, [
-    collection,
-    query?.search,
-    query?.frequency,
-    query?.geography,
-    query?.demography,
-    query?.source,
-  ]);
+  }, [collection, query]);
 
   const _collection = useMemo<Array<[string, any]>>(() => {
     const resultCollection: Array<[string, Catalogue[]]> = [];

@@ -64,6 +64,8 @@ export type Catalogue = {
   freq?: string;
   geo?: string[];
   demog?: string[];
+  begin?: number;
+  end?: number;
 };
 
 export type DCVariable = {
