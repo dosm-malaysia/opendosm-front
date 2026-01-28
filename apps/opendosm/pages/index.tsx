@@ -34,6 +34,7 @@ import dynamic from "next/dynamic";
 import { ReactNode, useMemo } from "react";
 import DivisionIcon, { Division } from "@icons/division";
 import { DateTime } from "luxon";
+import Image from "next/image";
 
 const Timeseries = dynamic(() => import("datagovmy-ui/charts/timeseries"), {
   ssr: false,
@@ -191,6 +192,7 @@ const Home: Page = ({
         header={[t("header")]}
         description={[t("description")]}
         agencyBadge={<AgencyBadge agency="dosm" />}
+        className="relative"
         action={
           <div className="flex flex-wrap gap-3">
             <At className="btn-primary text-sm shadow-button" href="/dashboard" enableIcon>
@@ -206,6 +208,15 @@ const Home: Page = ({
             <At className="btn px-3 py-1.5 text-sm" href="/publications" enableIcon>
               {t("common:nav.publications")}
             </At>
+            <div className="pointer-events-none absolute bottom-0 right-0 max-lg:hidden">
+              <Image
+                src="/static/images/header/hero-motif.svg"
+                className="opacity-100 xl:h-[200px]"
+                width={315}
+                height={200}
+                alt="OPENDOSM hero motif"
+              />
+            </div>
           </div>
         }
       />
