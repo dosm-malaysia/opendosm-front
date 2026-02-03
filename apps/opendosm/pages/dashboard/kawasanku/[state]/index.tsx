@@ -19,6 +19,7 @@ const KawasankuState: Page = ({
   choropleth,
   population_callout,
   geojson,
+  timeseries,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { t } = useTranslation(["dashboard-kawasanku"]);
 
@@ -34,6 +35,7 @@ const KawasankuState: Page = ({
         params={params}
         bar={bar}
         jitterplot={jitterplot}
+        timeseries={timeseries}
         pyramid={pyramid}
         choropleth={choropleth}
         population_callout={population_callout}
@@ -84,6 +86,7 @@ export const getStaticProps: GetStaticProps = withi18n(
           female: data.bar_chart_callout.data.tooltip.find(({ x }: { x: string }) => x === "female")
             ?.y,
         },
+        timeseries: data.timeseries,
         jitterplot: data.jitter_chart,
         pyramid: data.pyramid_data,
         choropleth: {
