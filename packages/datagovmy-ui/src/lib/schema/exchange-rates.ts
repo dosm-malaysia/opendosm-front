@@ -6,7 +6,10 @@
  */
 export const getColor = (index: number, zero_index: number): string => {
   const gradient_palette = [
-    "#091f12", // dark green
+    "#060f09", // dark green
+    "#071710",
+    "#08200e",
+    "#091f12",
     "#0d2f1b",
     "#0f3620",
     "#123f24",
@@ -53,7 +56,10 @@ export const getColor = (index: number, zero_index: number): string => {
     "#490808",
     "#370606",
     "#240404",
-    "#120202", // dark red
+    "#120202",
+    "#0e0101",
+    "#090101",
+    "#050000" // dark red
   ].reverse();
 
   return gradient_palette[index + zero_index + 1];
