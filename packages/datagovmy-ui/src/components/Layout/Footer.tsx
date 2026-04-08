@@ -18,7 +18,7 @@ const Footer: FunctionComponent<FooterProps> = ({ title, children, site }) => {
       case "datagovmy":
         return t("common:nav.public_open_data");
       case "opendosm":
-        return t("common:nav.public_open_data");
+        return t("agencies:dosm.full");
       case "kkmnow":
         return t("agencies:moh.full");
 
