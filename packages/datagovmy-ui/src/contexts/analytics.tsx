@@ -179,7 +179,7 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({ meta, ch
   const track = async (id: string, type: Meta["type"], metric: MetricType) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/events?name=dgmy_views&wait=true`,
+        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/events?name=page_views&wait=true`,
         {
           method: "POST",
           headers: {
@@ -197,7 +197,7 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({ meta, ch
 
       // Get updated view-count after POST request completed
       const updatedResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/pipes/dgmy_total_views_by_id.json?page_id=${id}&page_type=${type}`,
+        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/pipes/page_views_by_id.json?page_id=${id}&page_type=${type}`,
         {
           method: "GET",
           headers: {
@@ -210,7 +210,7 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({ meta, ch
 
       if (type === "data-catalogue") {
         const downloadsResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/pipes/dgmy_dc_analytics.json?catalogue_id=${id}`,
+          `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/pipes/catalogue_stats.json?catalogue_id=${id}`,
           {
             method: "GET",
             headers: {
@@ -257,7 +257,7 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({ meta, ch
   const updateDownloadCount = async (id: string, format: DownloadFileFormat) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/events?name=dgmy_dc_dls`,
+        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/events?name=catalogue_downloads`,
         {
           method: "POST",
           headers: {
@@ -340,7 +340,7 @@ export const AnalyticsProvider: FunctionComponent<ContextChildren> = ({ meta, ch
       };
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/events?name=opendata_analytics`,
+        `${process.env.NEXT_PUBLIC_TINYBIRD_URL}/events?name=web_events`,
         {
           method: "POST",
           headers: {
