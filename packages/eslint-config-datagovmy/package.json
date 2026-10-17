@@ -6,9 +6,9 @@
   "private": true,
   "dependencies": {
     "eslint": "^8.40.0",
-    "eslint-config-next": "^13.4.1",
+    "eslint-config-next": "^15.5.28",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-config-turbo": "^1.9.3",
+    "eslint-config-turbo": "^2.11.9",
     "eslint-plugin-react": "^7.32.2"
   },
   "publishConfig": {

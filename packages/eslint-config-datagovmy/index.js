@@ -10,7 +10,6 @@ module.exports = {
     "prettier",
     // "eslint:recommended",
     // "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended",
   ],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
