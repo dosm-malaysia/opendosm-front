@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local", "**/.env"],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "env": [
@@ -18,7 +18,7 @@
         "NEXT_PUBLIC_TINYBIRD_TOKEN",
         "NEXT_PUBLIC_TINYBIRD_URL"
       ],
-      "outputMode": "new-only",
+      "outputLogs": "new-only",
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "e2e:test": {
