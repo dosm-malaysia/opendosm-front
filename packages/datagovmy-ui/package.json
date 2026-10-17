@@ -134,7 +134,7 @@
     "@tanstack/match-sorter-utils": "^8.8.4",
     "@tanstack/react-table": "^8.11.2",
     "@tanstack/react-virtual": "^3.13.12",
-    "axios": "^1.12.2",
+    "axios": "^1.20.0",
     "canvas2svg": "^1.0.16",
     "chart.js": "^3.9.1",
     "chartjs-adapter-luxon": "^1.2.0",
@@ -149,7 +149,7 @@
     "geojson-bbox": "^0.0.1",
     "highlight.js": "^11.6.0",
     "i18next": "^22.4.14",
-    "i18next-http-backend": "^2.2.0",
+    "i18next-http-backend": "^4.0.3",
     "leaflet": "^1.9.1",
     "leaflet-easyprint": "^2.1.9",
     "leaflet.markercluster": "^1.5.3",
@@ -168,7 +168,7 @@
     "sonner": "^0.4.0",
     "tailwind-merge": "^1.14.0",
     "ua-parser-js": "^1.0.38",
-    "uuid": "^9.0.1"
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
     "@types/d3-interpolate": "^3.0.4",
